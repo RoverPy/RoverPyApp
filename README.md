@@ -1,2 +1,2 @@
-# RoverPy---App
+# RoverPy-App
 App for RoverPy
