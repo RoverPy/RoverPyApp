@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:sign_in/auth/login.dart';
+import 'package:sign_in/auth/register.dart';
 
-class AuthDemo extends StatefulWidget {
+class RegisterAnim extends StatefulWidget {
   @override
-  _AuthDemoState createState() => _AuthDemoState();
+  _RegisterAnimState createState() => _RegisterAnimState();
 }
 
-class _AuthDemoState extends State<AuthDemo> with SingleTickerProviderStateMixin{
+class _RegisterAnimState extends State<RegisterAnim> with SingleTickerProviderStateMixin{
 
   String _animationName = "Flow";
   Animation<Offset> classificationAnimation;
@@ -81,7 +81,7 @@ class _AuthDemoState extends State<AuthDemo> with SingleTickerProviderStateMixin
             position: switcher,
             child: Container(
               alignment: Alignment.center,
-              child: LoginScreen(changeAnimation: changeAnimation),
+              child: Register(changeAnimation: changeAnimation),
             ),
           ),
         ],

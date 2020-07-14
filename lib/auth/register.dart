@@ -2,27 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sign_in/auth/constants.dart';
 
-class LoginScreen extends StatefulWidget {
+class Register extends StatefulWidget {
 
   final Function changeAnimation;
 //  final Function toggleView;
-  LoginScreen({ this.changeAnimation }){}
+  Register({ this.changeAnimation }){}
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterState extends State<Register> {
 
   final _formKey = GlobalKey<FormState>();
   String email = "";
   String password = "";
+  String cnfPass = "";
   String error = "";
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
-      height: 400,
+      height: 600,
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -74,6 +76,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 SizedBox(height: 20.0,),
+                TextFormField(
+                  decoration: textInputDecoration.copyWith(prefixIcon: Icon(Icons.lock_outline),hintText: "Confirm Password"),
+                  validator: (val) {
+                    return val.compareTo(password) == 0 ? "Uh oh, Passwords do not match!" : null;
+                  },
+                  onChanged: (val) {
+                    setState(() {
+                      cnfPass = val;
+                    });
+                  },
+                ),
+                SizedBox(height: 20.0,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -82,27 +96,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: FlatButton(
                           padding: EdgeInsets.all(0.0),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24.0)
+                              borderRadius: BorderRadius.circular(24.0)
                           ),
                           onPressed: () {
                             //async action here
                           },
                           child: Ink(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.teal,
-                                  Colors.teal[200]
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(24.0)
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.teal,
+                                    Colors.teal[200]
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(24.0)
                             ),
                             child: Container(
                               padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
                               child: Text(
-                                "SIGN IN",
+                                "REGISTER",
                                 style: TextStyle(
                                   color: Colors.white,
                                   //fontWeight: FontWeight.bold,
@@ -118,11 +132,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     FlatButton(
                       onPressed: () {
                         widget.changeAnimation();
-//                        widget.toggleView();
-                      Navigator.pushReplacementNamed(context, '/signin');
+                        Navigator.pushReplacementNamed(context, '/login');
+//                      widget.toggleView();
                       },
                       child: Text(
-                        'Register?',
+                        'Sign In?',
                       ),
                     )
                   ],
