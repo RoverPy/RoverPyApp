@@ -4,9 +4,8 @@ import 'package:sign_in/auth/constants.dart';
 
 class LoginScreen extends StatefulWidget {
 
-  final Function changeAnimation;
-//  final Function toggleView;
-  LoginScreen({ this.changeAnimation }){}
+  final Function toggleView;
+  LoginScreen({ this.toggleView }){}
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -63,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20.0,),
                 TextFormField(
+                  obscureText: true,
                   decoration: textInputDecoration.copyWith(prefixIcon: Icon(Icons.lock),hintText: "Password"),
                   validator: (val) {
                     return val.length < 6 ? "Oops! Password seems too short" : null;
@@ -86,6 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           onPressed: () {
                             //async action here
+                            if(_formKey.currentState.validate()){
+                              print(email);
+                              print(password);
+                            }
                           },
                           child: Ink(
                             decoration: BoxDecoration(
@@ -117,9 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     FlatButton(
                       onPressed: () {
-                        widget.changeAnimation();
-//                        widget.toggleView();
-                      Navigator.pushReplacementNamed(context, '/signin');
+                          widget.toggleView();
                       },
                       child: Text(
                         'Register?',

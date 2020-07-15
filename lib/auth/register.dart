@@ -4,9 +4,8 @@ import 'package:sign_in/auth/constants.dart';
 
 class Register extends StatefulWidget {
 
-  final Function changeAnimation;
-//  final Function toggleView;
-  Register({ this.changeAnimation }){}
+  final Function toggleView;
+  Register({ this.toggleView }){}
   @override
   _RegisterState createState() => _RegisterState();
 }
@@ -24,7 +23,7 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
-      height: 600,
+      height: 500,
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -65,6 +64,7 @@ class _RegisterState extends State<Register> {
                 ),
                 SizedBox(height: 20.0,),
                 TextFormField(
+                  obscureText: true,
                   decoration: textInputDecoration.copyWith(prefixIcon: Icon(Icons.lock),hintText: "Password"),
                   validator: (val) {
                     return val.length < 6 ? "Oops! Password seems too short" : null;
@@ -77,9 +77,10 @@ class _RegisterState extends State<Register> {
                 ),
                 SizedBox(height: 20.0,),
                 TextFormField(
+                  obscureText: true,
                   decoration: textInputDecoration.copyWith(prefixIcon: Icon(Icons.lock_outline),hintText: "Confirm Password"),
                   validator: (val) {
-                    return val.compareTo(password) == 0 ? "Uh oh, Passwords do not match!" : null;
+                    return val.compareTo(password) != 0 ? "Uh oh, Passwords do not match!" : null;
                   },
                   onChanged: (val) {
                     setState(() {
@@ -100,6 +101,11 @@ class _RegisterState extends State<Register> {
                           ),
                           onPressed: () {
                             //async action here
+                            if(_formKey.currentState.validate()){
+                              print(email);
+                              print(password);
+                              print(cnfPass);
+                            }
                           },
                           child: Ink(
                             decoration: BoxDecoration(
@@ -131,9 +137,7 @@ class _RegisterState extends State<Register> {
                     ),
                     FlatButton(
                       onPressed: () {
-                        widget.changeAnimation();
-                        Navigator.pushReplacementNamed(context, '/login');
-//                      widget.toggleView();
+                        widget.toggleView();
                       },
                       child: Text(
                         'Sign In?',
