@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sign_in/auth/constants.dart';
+import 'package:sign_in/services/AuthService.dart';
 
 class Register extends StatefulWidget {
 
@@ -12,11 +13,11 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
+  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String email = "";
   String password = "";
   String cnfPass = "";
-  String error = "";
 
 
   @override
@@ -99,12 +100,20 @@ class _RegisterState extends State<Register> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24.0)
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             //async action here
                             if(_formKey.currentState.validate()){
-                              print(email);
-                              print(password);
-                              print(cnfPass);
+                              dynamic res = await _auth.registerWithEmailAndPass(email, password);
+                              print(res);
+                              if(res == null){
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text("Something went wrong! Make sure your credentials are correct and retry!"),
+                                ));
+                              }else{
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text("Account created successfully!"),
+                                ));
+                              }
                             }
                           },
                           child: Ink(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sign_in/auth/constants.dart';
+import 'package:sign_in/services/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -12,10 +13,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
+  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String email = "";
   String password = "";
-  String error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +85,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24.0)
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             //async action here
                             if(_formKey.currentState.validate()){
-                              print(email);
-                              print(password);
+                              dynamic res = await _auth.signInWithEmailAndPass(email, password);
+                              print(res);
+                              if(res == null){
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text("Something went wrong! Make sure your credentials are correct and retry!"),
+                                ));
+                              }else{
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text("Successfully logged in!"),
+                                ));
+                              }
                             }
                           },
                           child: Ink(
