@@ -63,7 +63,7 @@ class _CollapsingNavDrawerState extends State<CollapsingNavDrawer> {
           ),
           GestureDetector(
             onTap: () {
-              AuthService().LogOut();
+              AuthService().logOut();
             },
             child: Container(
                 child: Padding(
@@ -110,8 +110,8 @@ class _CollapsingNavDrawerState extends State<CollapsingNavDrawer> {
                     ),
                     Switch(
                       value: themeProvider.isDarkTheme,
-                      onChanged: (value) async {
-                        await themeProvider.setThemePreference(value);
+                      onChanged: (value) {
+                        themeProvider.isDarkTheme = value;
                       },
                     ),
                     Icon(

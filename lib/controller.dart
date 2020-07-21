@@ -13,12 +13,12 @@ class _HomeScreenState extends State<HomeScreen> {
   DarkThemeProvider _darkThemeProvider = DarkThemeProvider();
 
   void getCurrentAppTheme() async {
-    await _darkThemeProvider.getThemePreference();
+    _darkThemeProvider.isDarkTheme = await _darkThemeProvider.themePreference.getThemePreference();
   }
 
   @override
   void initState() {
-    getCurrentAppTheme(); //TODO: Move to splash screen initState
+    getCurrentAppTheme();
     super.initState();
   }
 

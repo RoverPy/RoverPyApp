@@ -5,7 +5,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   //stream
-  Stream<FirebaseUser> get userDetai {
+  Stream<FirebaseUser> get userDetail {
     return _auth.onAuthStateChanged;
   }
 
@@ -36,7 +36,7 @@ class AuthService {
   }
 
   //Logout function
-  void LogOut() async {
+  void logOut() async {
     try {
       await _auth.signOut();
     } catch (err) {

@@ -10,6 +10,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamProvider<FirebaseUser>.value(
-        value: AuthService().userDetai, child: Wrapper());
+        value: AuthService().userDetail, child: Wrapper());
   }
 }
