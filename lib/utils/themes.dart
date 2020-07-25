@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Styles {
+  static final LinearGradient background =  LinearGradient(colors: [Color(0xFF1b1e44), Color(0xFF2d3447),],begin: Alignment.bottomCenter,
+      end: Alignment.topCenter,
+      tileMode: TileMode.clamp);
   static ThemeData themeData(bool isDarkTheme, BuildContext context) {
     return ThemeData(
       primarySwatch: Colors.blue,

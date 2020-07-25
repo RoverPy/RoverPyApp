@@ -1,34 +1,9 @@
-// import 'package:flutter/material.dart';
-
-// class HomePage extends StatefulWidget {
-//   @override
-//   _HomePageState createState() => _HomePageState();
-// }
-
-// class _HomePageState extends State<HomePage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Theme.of(context).backgroundColor,
-//       appBar: AppBar(
-//         title: Text(
-//           'RoverPy',
-//           style: Theme.of(context).textTheme.headline5,
-//         ),
-//       ),
-//       body: Center(
-//         child: Text('HOME PAGE', style: Theme.of(context).textTheme.headline6),
-//       ),
-//       drawer: CollapsingNavDrawer(),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:sign_in/pages/controls_page.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import 'dart:math';
-import 'package:sign_in/commons/collapsing_navigation_drawer.dart';
+
+import '../utils/themes.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -52,44 +27,38 @@ class _HomePageState extends State<HomePage> {
 
     return Container(
       decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [
-            Color(0xFF1b1e44),
-            Color(0xFF2d3447),
-          ],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              tileMode: TileMode.clamp)),
+          gradient: Styles.background),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 12.0, right: 12.0, top: 30.0, bottom: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        CustomIcons.menu,
-                        color: Colors.white,
-                        size: 30.0,
-                      ),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 30.0,
-                      ),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
-              ),
+//              Padding(
+//                padding: const EdgeInsets.only(
+//                    left: 12.0, right: 12.0, top: 30.0, bottom: 8.0),
+//                child: Row(
+//                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                  children: <Widget>[
+//                    IconButton(
+//                      icon: Icon(
+//                        CustomIcons.menu,
+//                        color: Colors.white,
+//                        size: 30.0,
+//                      ),
+//                      onPressed: () {},
+//                    ),
+//                    IconButton(
+//                      icon: Icon(
+//                        Icons.search,
+//                        color: Colors.white,
+//                        size: 30.0,
+//                      ),
+//                      onPressed: () {},
+//                    )
+//                  ],
+//                ),
+//              ),
+              SizedBox(height: 30.0,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
@@ -98,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                     Text("RoverPy",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 46.0,
+                          fontSize: 42.0,
                           fontFamily: "Calibre-Semibold",
                           letterSpacing: 1.0,
                         )),
@@ -160,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                     Text("Rover Connect",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 46.0,
+                          fontSize: 42.0,
                           fontFamily: "Calibre-Semibold",
                           letterSpacing: 1.0,
                         )),
@@ -221,7 +190,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ],
-              )
+              ),
+              SizedBox(height: 30,),
             ],
           ),
         ),
@@ -231,9 +201,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 class CardScrollWidget extends StatelessWidget {
-  var currentPage;
-  var padding = 20.0;
-  var verticalInset = 20.0;
+  final currentPage;
+  final padding = 20.0;
+  final verticalInset = 20.0;
 
   CardScrollWidget(this.currentPage);
 
