@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -9,6 +8,7 @@ import 'package:sign_in/commons/collapsing_navigation_drawer.dart';
 import 'package:sign_in/commons/stepper_control.dart';
 import 'package:sign_in/services/ChatPage.dart';
 import 'package:sign_in/services/SelectBondedDevicePage.dart';
+import 'package:sign_in/utils/utils_export.dart';
 
 class ControlsPage extends StatefulWidget {
   @override
@@ -20,459 +20,351 @@ class _ControlsPageState extends State<ControlsPage> {
   BluetoothConnection connection;
   bool isDisconnecting = false;
   bool isConnecting = true;
+
   bool get isConnected => connection != null && connection.isConnected;
+
+  String prevChar = '';
 
   @override
   Widget build(BuildContext context) {
+
+    final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+
+    void onEndToggle(String char) {
+      prevChar = char;
+      print(char);
+      if (_chatPage.server != null)
+        _sendMessage(char);
+    }
+
+    void onToggle(String char) {
+      if(prevChar == char)
+        return;
+      else {
+        prevChar = char;
+        print(char);
+        if (_chatPage.server != null) {
+          _sendMessage(char);
+        } else {
+          var snackBar = SnackBar(
+            content: Text('Not connected to any device'),
+          );
+          _key.currentState.showSnackBar(snackBar);
+        }
+      }
+    }
+
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      key: _key,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       appBar: AppBar(
         title: Text(
           'RoverPy Controls',
-          style: Theme.of(context).textTheme.headline,
+          style: Theme
+              .of(context)
+              .textTheme
+              .headline5,
         ),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert),
+              itemBuilder: (context) {
+                return [PopupMenuItem(
+                  child: Text('Connect to paired device to chat'),
+                  value: 'connect to bluetooth',
+                )];
+              },
+              onSelected: (choice) => {connectMethod()},
+            ),
+          ),
+        ],
       ),
-      body: Builder(
-        builder: (context) {
-          if (MediaQuery.of(context).size.height >
-              MediaQuery.of(context).size.width)
-            return Column(
-              children: <Widget>[
-                RaisedButton(
-                  child: const Text('Connect to paired device to chat'),
-                  onPressed: () async {
-                    final BluetoothDevice selectedDevice =
-                        await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return SelectBondedDevicePage(
-                              checkAvailability: false);
-                        },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: Styles.background,
+        ),
+        child: Builder(
+          builder: (context) {
+            if (MediaQuery
+                .of(context)
+                .size
+                .height > MediaQuery
+                .of(context)
+                .size
+                .width)
+              return Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 220.0 + 16.0 + 24.0 + 32.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width - 15.0,
+                      decoration: BoxDecoration(boxShadow: [
+                        BoxShadow(
+                            blurRadius: 5.0,
+                            color: Theme
+                                .of(context)
+                                .accentColor),
+                      ]),
+                      child: Card(
+                        color: Theme
+                            .of(context)
+                            .backgroundColor,
+                        elevation: 5.0,
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Rover Controls',
+                                    style: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .headline6,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    child: Center(
+                                      child: StepperTouch(
+                                        size: 220.0,
+                                        direction: Axis.vertical,
+                                        initialValue: 'S',
+                                        positiveValue: 'F',
+                                        negativeValue: 'B',
+                                        onEnd: onEndToggle,
+                                        onHoldDown: onToggle,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    child: Center(
+                                      child: StepperTouch(
+                                        size: 220.0,
+                                        direction: Axis.horizontal,
+                                        initialValue: 'S',
+                                        positiveValue: 'L',
+                                        negativeValue: 'R',
+                                        onEnd: onEndToggle,
+                                        onHoldDown: onToggle,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                    _chatPage = ChatPage(
-                      server: selectedDevice,
-                    );
-                    BluetoothConnection.toAddress(selectedDevice.address)
-                        .then((_connection) {
-                      print('Connected to the device');
-                      connection = _connection;
-                      setState(() {
-                        isConnecting = false;
-                        isDisconnecting = false;
-                      });
-
-                      connection.input.listen(_onDataReceived).onDone(() {
-                        // Example: Detect which side closed the connection
-                        // There should be `isDisconnecting` flag to show are we are (locally)
-                        // in middle of disconnecting process, should be set before calling
-                        // `dispose`, `finish` or `close`, which all causes to disconnect.
-                        // If we except the disconnection, `onDone` should be fired as result.
-                        // If we didn't except this (no flag set), it means closing by remote.
-                        if (isDisconnecting) {
-                          print('Disconnecting locally!');
-                        } else {
-                          print('Disconnected remotely!');
-                        }
-                        if (this.mounted) {
-                          setState(() {});
-                        }
-                      });
-                    }).catchError((error) {
-                      print('Cannot connect, exception occured');
-                      print(error);
-                    });
-                    // if (selectedDevice != null) {
-                    //   print('Connect -> selected ' + selectedDevice.address);
-                    //   _startChat(context, selectedDevice);
-                    // } else {
-                    //   print('Connect -> no device selected');
-                    // }
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height / 2 - 60.0,
-                    width: MediaQuery.of(context).size.width - 15.0,
+                    ),
+                  ),
+                  Container(
+                    height: 220.0 + 16.0 + 24.0 + 32.0,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width - 15.0,
                     decoration: BoxDecoration(boxShadow: [
                       BoxShadow(
-                          blurRadius: 5.0,
-                          color: Theme.of(context).accentColor),
+                          blurRadius: 5.0, color: Theme
+                          .of(context)
+                          .accentColor),
                     ]),
                     child: Card(
-                      color: Theme.of(context).backgroundColor,
                       elevation: 5.0,
-                      child: Column(
+                      color: Theme
+                          .of(context)
+                          .backgroundColor,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Rover Controls',
-                                  style: Theme.of(context).textTheme.title,
-                                ),
-                              ),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Belt Controls',
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .headline6,
+                            ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    0.0, 8.0, 8.0, 8.0),
-                                child: Container(
-                                  child: Center(
-                                    child: StepperTouch(
-                                      size: 200.0,
-                                      direction: Axis.vertical,
-                                      initialValue: 'S',
-                                      positiveValue: 'F',
-                                      negativeValue: 'B',
-                                      onEnd: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                      onHoldDown: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  child: Center(
-                                    child: StepperTouch(
-                                      size: 220.0,
-                                      direction: Axis.horizontal,
-                                      initialValue: 'S',
-                                      positiveValue: 'L',
-                                      negativeValue: 'R',
-                                      onEnd: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                      onHoldDown: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          SizedBox(
+                            width: 30.0,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: StepperTouch(
+                              size: 220.0,
+                              direction: Axis.vertical,
+                              initialValue: 'S',
+                              positiveValue: 'U',
+                              negativeValue: 'D',
+                              onEnd: onEndToggle,
+                              onHoldDown: onToggle,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height / 2 - 100.0,
-                  width: MediaQuery.of(context).size.width - 15.0,
-                  decoration: BoxDecoration(boxShadow: [
-                    BoxShadow(
-                        blurRadius: 5.0, color: Theme.of(context).accentColor),
-                  ]),
-                  child: Card(
-                    elevation: 5.0,
-                    color: Theme.of(context).backgroundColor,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Belt Controls',
-                            style: Theme.of(context).textTheme.title,
-                          ),
+                ],
+              );
+            else
+              return Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 220.0 + 16.0 + 24.0 + 32.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width / 2 - 15.0,
+                      decoration: BoxDecoration(boxShadow: [
+                        BoxShadow(
+                            blurRadius: 5.0,
+                            color: Theme
+                                .of(context)
+                                .accentColor),
+                      ]),
+                      child: Card(
+                        color: Theme
+                            .of(context)
+                            .backgroundColor,
+                        elevation: 5.0,
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Rover Controls',
+                                    style: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .headline6,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    child: Center(
+                                      child: StepperTouch(
+                                        size: 220.0,
+                                        direction: Axis.vertical,
+                                        initialValue: 'S',
+                                        positiveValue: 'F',
+                                        negativeValue: 'B',
+                                        onEnd: onEndToggle,
+                                        onHoldDown: onToggle,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    child: Center(
+                                      child: StepperTouch(
+                                        size: 220.0,
+                                        direction: Axis.horizontal,
+                                        initialValue: 'S',
+                                        positiveValue: 'L',
+                                        negativeValue: 'R',
+                                        onEnd: onEndToggle,
+                                        onHoldDown: onToggle,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          width: 30.0,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: StepperTouch(
-                            size: 200.0,
-                            direction: Axis.vertical,
-                            initialValue: 'S',
-                            positiveValue: 'U',
-                            negativeValue: 'D',
-                            onEnd: (String value) {
-                              if (_chatPage.server != null) {
-                                print('Connect -> selected ' +
-                                    _chatPage.server.address);
-                                _sendMessage(value);
-                              } else {
-                                print('Connect -> no device selected');
-                              }
-                            },
-                            onHoldDown: (String value) {
-                              if (_chatPage.server != null) {
-                                print('Connect -> selected ' +
-                                    _chatPage.server.address);
-                                _sendMessage(value);
-                              } else {
-                                print('Connect -> no device selected');
-                              }
-                            },
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          else
-            return Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: MediaQuery.of(context).size.width / 2 - 10.0,
-                    width: MediaQuery.of(context).size.height - 15.0,
+                  Container(
+                    height: 220.0 + 16.0 + 24.0 + 32.0,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width / 2 - 15.0,
                     decoration: BoxDecoration(boxShadow: [
                       BoxShadow(
-                          blurRadius: 5.0,
-                          color: Theme.of(context).accentColor),
+                          blurRadius: 5.0, color: Theme
+                          .of(context)
+                          .accentColor),
                     ]),
                     child: Card(
-                      color: Theme.of(context).backgroundColor,
                       elevation: 5.0,
-                      child: Column(
+                      color: Theme
+                          .of(context)
+                          .backgroundColor,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Rover Controls',
-                                  style: Theme.of(context).textTheme.title,
-                                ),
-                              ),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Belt Controls',
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .headline6,
+                            ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  child: Center(
-                                    child: StepperTouch(
-                                      size: 220.0,
-                                      direction: Axis.vertical,
-                                      initialValue: 'S',
-                                      positiveValue: 'F',
-                                      negativeValue: 'B',
-                                      onEnd: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                      onHoldDown: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  child: Center(
-                                    child: StepperTouch(
-                                      size: 220.0,
-                                      direction: Axis.horizontal,
-                                      initialValue: 'S',
-                                      positiveValue: 'L',
-                                      negativeValue: 'R',
-                                      onEnd: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                      onHoldDown: (String value) {
-                                        if (_chatPage.server != null) {
-                                          print('Connect -> selected ' +
-                                              _chatPage.server.address);
-                                          _sendMessage(value);
-                                        } else {
-                                          print(
-                                              'Connect -> no device selected');
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          SizedBox(
+                            width: 30.0,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: StepperTouch(
+                              size: 220.0,
+                              direction: Axis.vertical,
+                              initialValue: 'S',
+                              positiveValue: 'U',
+                              negativeValue: 'D',
+                              onEnd: onEndToggle,
+                              onHoldDown: onToggle,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.width / 2 - 10.0,
-                  width: MediaQuery.of(context).size.height - 15.0,
-                  decoration: BoxDecoration(boxShadow: [
-                    BoxShadow(
-                        blurRadius: 5.0, color: Theme.of(context).accentColor),
-                  ]),
-                  child: Card(
-                    elevation: 5.0,
-                    color: Theme.of(context).backgroundColor,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Belt Controls',
-                            style: Theme.of(context).textTheme.title,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 30.0,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: StepperTouch(
-                            size: 220.0,
-                            direction: Axis.vertical,
-                            initialValue: 'S',
-                            positiveValue: 'U',
-                            negativeValue: 'D',
-                            onEnd: (String value) {
-                              if (_chatPage.server != null) {
-                                print('Connect -> selected ' +
-                                    _chatPage.server.address);
-                                _sendMessage(value);
-                              } else {
-                                print('Connect -> no device selected');
-                              }
-                            },
-                            onHoldDown: (String value) {
-                              if (_chatPage.server != null) {
-                                print('Connect -> selected ' +
-                                    _chatPage.server.address);
-                                _sendMessage(value);
-                              } else {
-                                print('Connect -> no device selected');
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                RaisedButton(
-                  child: const Text('Connect to paired device to chat'),
-                  onPressed: () async {
-                    final BluetoothDevice selectedDevice =
-                        await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return SelectBondedDevicePage(
-                              checkAvailability: false);
-                        },
-                      ),
-                    );
-                    _chatPage = ChatPage(
-                      server: selectedDevice,
-                    );
-                    BluetoothConnection.toAddress(selectedDevice.address)
-                        .then((_connection) {
-                      print('Connected to the device');
-                      connection = _connection;
-                      setState(() {
-                        isConnecting = false;
-                        isDisconnecting = false;
-                      });
-
-                      connection.input.listen(_onDataReceived).onDone(() {
-                        // Example: Detect which side closed the connection
-                        // There should be `isDisconnecting` flag to show are we are (locally)
-                        // in middle of disconnecting process, should be set before calling
-                        // `dispose`, `finish` or `close`, which all causes to disconnect.
-                        // If we except the disconnection, `onDone` should be fired as result.
-                        // If we didn't except this (no flag set), it means closing by remote.
-                        if (isDisconnecting) {
-                          print('Disconnecting locally!');
-                        } else {
-                          print('Disconnected remotely!');
-                        }
-                        if (this.mounted) {
-                          setState(() {});
-                        }
-                      });
-                    }).catchError((error) {
-                      print('Cannot connect, exception occured');
-                      print(error);
-                    });
-                    // if (selectedDevice != null) {
-                    //   print('Connect -> selected ' + selectedDevice.address);
-                    //   _startChat(context, selectedDevice);
-                    // } else {
-                    //   print('Connect -> no device selected');
-                    // }
-                  },
-                ),
-              ],
-            );
-        },
+                ],
+              );
+          },
+        ),
       ),
       drawer: CollapsingNavDrawer(),
     );
@@ -519,5 +411,56 @@ class _ControlsPageState extends State<ControlsPage> {
         print('error: {e}');
       }
     }
+  }
+
+  void connectMethod() async {
+    final BluetoothDevice selectedDevice =
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return SelectBondedDevicePage(
+              checkAvailability: false);
+        },
+      ),
+    );
+    _chatPage = ChatPage(
+      server: selectedDevice,
+    );
+
+    if (selectedDevice != null) {
+      print('Connect -> selected ' + selectedDevice.address);
+      //_startChat(context, selectedDevice);
+    } else {
+      print('Connect -> no device selected');
+    }
+    BluetoothConnection.toAddress(selectedDevice.address)
+        .then((_connection) {
+      print('Connected to the device');
+      connection = _connection;
+      setState(() {
+        isConnecting = false;
+        isDisconnecting = false;
+      });
+
+      connection.input.listen(_onDataReceived).onDone(() {
+        // Example: Detect which side closed the connection
+        // There should be `isDisconnecting` flag to show are we are (locally)
+        // in middle of disconnecting process, should be set before calling
+        // `dispose`, `finish` or `close`, which all causes to disconnect.
+        // If we except the disconnection, `onDone` should be fired as result.
+        // If we didn't except this (no flag set), it means closing by remote.
+        if (isDisconnecting) {
+          print('Disconnecting locally!');
+        } else {
+          print('Disconnected remotely!');
+        }
+        if (this.mounted) {
+          setState(() {});
+        }
+      });
+    }).catchError((error) {
+      print('Cannot connect, exception occured');
+      print(error);
+    });
   }
 }
