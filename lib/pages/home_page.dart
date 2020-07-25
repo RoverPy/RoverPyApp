@@ -33,31 +33,6 @@ class _HomePageState extends State<HomePage> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-//              Padding(
-//                padding: const EdgeInsets.only(
-//                    left: 12.0, right: 12.0, top: 30.0, bottom: 8.0),
-//                child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                  children: <Widget>[
-//                    IconButton(
-//                      icon: Icon(
-//                        CustomIcons.menu,
-//                        color: Colors.white,
-//                        size: 30.0,
-//                      ),
-//                      onPressed: () {},
-//                    ),
-//                    IconButton(
-//                      icon: Icon(
-//                        Icons.search,
-//                        color: Colors.white,
-//                        size: 30.0,
-//                      ),
-//                      onPressed: () {},
-//                    )
-//                  ],
-//                ),
-//              ),
               SizedBox(height: 30.0,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -144,28 +119,33 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blueAccent,
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 22.0, vertical: 6.0),
-                          child: Text("Quick Connect",
-                              style: TextStyle(color: Colors.white)),
+              InkWell(
+                onTap: () {
+
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 22.0, vertical: 6.0),
+                            child: Text("Quick Connect",
+                                style: TextStyle(color: Colors.white)),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 15.0,
-                    ),
-                  ],
+                      SizedBox(
+                        width: 15.0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
