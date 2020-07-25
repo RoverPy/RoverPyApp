@@ -10,13 +10,16 @@ import 'package:sign_in/services/ChatPage.dart';
 import 'package:sign_in/services/SelectBondedDevicePage.dart';
 import 'package:sign_in/utils/utils_export.dart';
 
+import '../services/ChatPage.dart';
+import '../utils/customIcons.dart';
+
 class ControlsPage extends StatefulWidget {
   @override
   _ControlsPageState createState() => _ControlsPageState();
 }
 
 class _ControlsPageState extends State<ControlsPage> {
-  ChatPage _chatPage;
+  ChatPage _chatPage = ChatPage(server: null,);
   BluetoothConnection connection;
   bool isDisconnecting = false;
   bool isConnecting = true;
@@ -32,7 +35,6 @@ class _ControlsPageState extends State<ControlsPage> {
 
     void onEndToggle(String char) {
       prevChar = char;
-      print(char);
       if (_chatPage.server != null)
         _sendMessage(char);
     }
@@ -42,12 +44,11 @@ class _ControlsPageState extends State<ControlsPage> {
         return;
       else {
         prevChar = char;
-        print(char);
         if (_chatPage.server != null) {
           _sendMessage(char);
         } else {
           var snackBar = SnackBar(
-            content: Text('Not connected to any device'),
+            content: Text('Not connected to any device', style: Theme.of(context).textTheme.headline6,),
           );
           _key.currentState.showSnackBar(snackBar);
         }
@@ -59,64 +60,52 @@ class _ControlsPageState extends State<ControlsPage> {
       backgroundColor: Theme
           .of(context)
           .backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'RoverPy Controls',
-          style: Theme
-              .of(context)
-              .textTheme
-              .headline5,
-        ),
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert),
-              itemBuilder: (context) {
-                return [PopupMenuItem(
-                  child: Text('Connect to paired device to chat'),
-                  value: 'connect to bluetooth',
-                )];
-              },
-              onSelected: (choice) => {connectMethod()},
-            ),
-          ),
-        ],
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: Styles.background,
         ),
         child: Builder(
           builder: (context) {
-            if (MediaQuery
-                .of(context)
-                .size
-                .height > MediaQuery
-                .of(context)
-                .size
-                .width)
+            if (MediaQuery.of(context).size.height > MediaQuery.of(context).size.width)
               return Column(
                 children: <Widget>[
+                  SizedBox(height: 30.0,),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("RoverPy Controls",
+                            style: Theme.of(context).textTheme.headline3,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: PopupMenuButton<String>(
+                            icon: Icon(CustomIcons.option, size: 12.0, color: Colors.white,),
+                            itemBuilder: (context) {
+                              return [PopupMenuItem(
+                                child: Text('Connect to paired device to chat'),
+                                value: 'connect to bluetooth',
+                              )];
+                            },
+                            onSelected: (choice) => {connectMethod()},
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       height: 220.0 + 16.0 + 24.0 + 32.0,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width - 15.0,
+                      width: MediaQuery.of(context).size.width - 15.0,
                       decoration: BoxDecoration(boxShadow: [
                         BoxShadow(
                             blurRadius: 5.0,
-                            color: Theme
-                                .of(context)
-                                .accentColor),
+                            color: Theme.of(context).accentColor),
                       ]),
                       child: Card(
-                        color: Theme
-                            .of(context)
-                            .backgroundColor,
+                        color: Theme.of(context).backgroundColor,
                         elevation: 5.0,
                         child: Column(
                           children: <Widget>[
@@ -124,13 +113,10 @@ class _ControlsPageState extends State<ControlsPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
                                   child: Text(
                                     'Rover Controls',
-                                    style: Theme
-                                        .of(context)
-                                        .textTheme
-                                        .headline6,
+                                    style: Theme.of(context).textTheme.headline6,
                                   ),
                                 ),
                               ],
@@ -212,7 +198,7 @@ class _ControlsPageState extends State<ControlsPage> {
                             width: 30.0,
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.fromLTRB(16.0, 45.0, 16.0, 16.0),
                             child: StepperTouch(
                               size: 220.0,
                               direction: Axis.vertical,
@@ -230,136 +216,165 @@ class _ControlsPageState extends State<ControlsPage> {
                 ],
               );
             else
-              return Row(
+              return Column(
                 children: <Widget>[
+                  SizedBox(height: 30.0,),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 220.0 + 16.0 + 24.0 + 32.0,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width / 2 - 15.0,
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                            blurRadius: 5.0,
-                            color: Theme
-                                .of(context)
-                                .accentColor),
-                      ]),
-                      child: Card(
-                        color: Theme
-                            .of(context)
-                            .backgroundColor,
-                        elevation: 5.0,
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Rover Controls',
-                                    style: Theme
-                                        .of(context)
-                                        .textTheme
-                                        .headline6,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    child: Center(
-                                      child: StepperTouch(
-                                        size: 220.0,
-                                        direction: Axis.vertical,
-                                        initialValue: 'S',
-                                        positiveValue: 'F',
-                                        negativeValue: 'B',
-                                        onEnd: onEndToggle,
-                                        onHoldDown: onToggle,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    child: Center(
-                                      child: StepperTouch(
-                                        size: 220.0,
-                                        direction: Axis.horizontal,
-                                        initialValue: 'S',
-                                        positiveValue: 'L',
-                                        negativeValue: 'R',
-                                        onEnd: onEndToggle,
-                                        onHoldDown: onToggle,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("RoverPy Controls",
+                          style: Theme.of(context).textTheme.headline3,
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: PopupMenuButton<String>(
+                            icon: Icon(CustomIcons.option, size: 12.0, color: Colors.white,),
+                            itemBuilder: (context) {
+                              return [PopupMenuItem(
+                                child: Text('Connect to paired device to chat'),
+                                value: 'connect to bluetooth',
+                              )];
+                            },
+                            onSelected: (choice) => {connectMethod()},
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Container(
-                    height: 220.0 + 16.0 + 24.0 + 32.0,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width / 2 - 15.0,
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                          blurRadius: 5.0, color: Theme
-                          .of(context)
-                          .accentColor),
-                    ]),
-                    child: Card(
-                      elevation: 5.0,
-                      color: Theme
-                          .of(context)
-                          .backgroundColor,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Belt Controls',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .headline6,
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: 220.0 + 16.0 + 24.0 + 32.0,
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width / 2 - 15.0,
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                blurRadius: 5.0,
+                                color: Theme
+                                    .of(context)
+                                    .accentColor),
+                          ]),
+                          child: Card(
+                            color: Theme
+                                .of(context)
+                                .backgroundColor,
+                            elevation: 5.0,
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                                      child: Text(
+                                        'Rover Controls',
+                                        style: Theme
+                                            .of(context)
+                                            .textTheme
+                                            .headline6,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        child: Center(
+                                          child: StepperTouch(
+                                            size: 220.0,
+                                            direction: Axis.vertical,
+                                            initialValue: 'S',
+                                            positiveValue: 'F',
+                                            negativeValue: 'B',
+                                            onEnd: onEndToggle,
+                                            onHoldDown: onToggle,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        child: Center(
+                                          child: StepperTouch(
+                                            size: 220.0,
+                                            direction: Axis.horizontal,
+                                            initialValue: 'S',
+                                            positiveValue: 'L',
+                                            negativeValue: 'R',
+                                            onEnd: onEndToggle,
+                                            onHoldDown: onToggle,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: 30.0,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: StepperTouch(
-                              size: 220.0,
-                              direction: Axis.vertical,
-                              initialValue: 'S',
-                              positiveValue: 'U',
-                              negativeValue: 'D',
-                              onEnd: onEndToggle,
-                              onHoldDown: onToggle,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      Container(
+                        height: 220.0 + 16.0 + 24.0 + 32.0,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width / 2 - 15.0,
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(
+                              blurRadius: 5.0, color: Theme
+                              .of(context)
+                              .accentColor),
+                        ]),
+                        child: Card(
+                          elevation: 5.0,
+                          color: Theme
+                              .of(context)
+                              .backgroundColor,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Belt Controls',
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .headline6,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 30.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(16.0, 45.0, 16.0, 16.0),
+                                child: StepperTouch(
+                                  size: 220.0,
+                                  direction: Axis.vertical,
+                                  initialValue: 'S',
+                                  positiveValue: 'U',
+                                  negativeValue: 'D',
+                                  onEnd: onEndToggle,
+                                  onHoldDown: onToggle,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               );

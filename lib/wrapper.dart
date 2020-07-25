@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sign_in/controller.dart';
-import 'package:sign_in/main_temp.dart';
+import 'animations.dart';
+import 'pages/home_page.dart';
+import 'utils/themes.dart';
+
 
 class Wrapper extends StatefulWidget {
   @override
@@ -14,6 +17,13 @@ class _WrapperState extends State<Wrapper> {
   Widget build(BuildContext context) {
     final user = Provider.of<FirebaseUser>(context);
     print(user);
-    return user != null ? HomeScreen() : HomeMain();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    return MaterialApp(
+      theme: Styles.themeData(context),
+      home: user != null ? HomePage() : AuthDemo(),
+    );
   }
 }

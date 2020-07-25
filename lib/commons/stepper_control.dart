@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
 class StepperTouch extends StatefulWidget {
-  const StepperTouch({
+  StepperTouch({
     Key key,
     this.size = 300.0,
     this.onEnd,
@@ -32,7 +32,7 @@ class StepperTouch extends StatefulWidget {
   /// defaults to true
   final bool withSpring;
   final double size;
-  final Color buttonsColor = Colors.blue;
+  final Color buttonsColor = Color.fromRGBO(0, 255, 255, 1);
 
   @override
   _Stepper2State createState() => _Stepper2State();
