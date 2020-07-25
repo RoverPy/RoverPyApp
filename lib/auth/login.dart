@@ -4,15 +4,13 @@ import 'package:sign_in/auth/constants.dart';
 import 'package:sign_in/services/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {
-
-  final Function toggleView;
-  LoginScreen({ this.toggleView }){}
+  final Function toggleView, controller;
+  LoginScreen({this.toggleView, this.controller});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String email = "";
@@ -35,7 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                SizedBox(height: 10.0,),
+                SizedBox(
+                  height: 10.0,
+                ),
                 Row(
                   children: <Widget>[
                     Text(
@@ -49,9 +49,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 5.0,),
+                SizedBox(
+                  height: 5.0,
+                ),
                 TextFormField(
-                  decoration: textInputDecoration.copyWith(prefixIcon: Icon(Icons.email),hintText: "Email ID"),
+                  decoration: textInputDecoration.copyWith(
+                      prefixIcon: Icon(Icons.email), hintText: "Email ID"),
                   validator: (val) {
                     return val.isEmpty ? "Enter a valid email" : null;
                   },
@@ -61,12 +64,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   },
                 ),
-                SizedBox(height: 20.0,),
+                SizedBox(
+                  height: 20.0,
+                ),
                 TextFormField(
                   obscureText: true,
-                  decoration: textInputDecoration.copyWith(prefixIcon: Icon(Icons.lock),hintText: "Password"),
+                  decoration: textInputDecoration.copyWith(
+                      prefixIcon: Icon(Icons.lock), hintText: "Password"),
                   validator: (val) {
-                    return val.length < 6 ? "Oops! Password seems too short" : null;
+                    return val.length < 6
+                        ? "Oops! Password seems too short"
+                        : null;
                   },
                   onChanged: (val) {
                     setState(() {
@@ -74,7 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   },
                 ),
-                SizedBox(height: 20.0,),
+                SizedBox(
+                  height: 20.0,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -83,18 +93,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: FlatButton(
                           padding: EdgeInsets.all(0.0),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24.0)
-                          ),
+                              borderRadius: BorderRadius.circular(24.0)),
                           onPressed: () async {
                             //async action here
-                            if(_formKey.currentState.validate()){
-                              dynamic res = await _auth.signInWithEmailAndPass(email, password);
+                            if (_formKey.currentState.validate()) {
+                              dynamic res = await _auth.signInWithEmailAndPass(
+                                  email, password);
                               print(res);
-                              if(res == null){
+                              if (res == null) {
                                 Scaffold.of(context).showSnackBar(SnackBar(
-                                  content: Text("Something went wrong! Make sure your credentials are correct and retry!"),
+                                  content: Text(
+                                      "Something went wrong! Make sure your credentials are correct and retry!"),
                                 ));
-                              }else{
+                              } else {
+                                widget.controller();
                                 Scaffold.of(context).showSnackBar(SnackBar(
                                   content: Text("Successfully logged in!"),
                                 ));
@@ -103,18 +115,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           child: Ink(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.teal,
-                                  Colors.teal[200]
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(24.0)
-                            ),
+                                gradient: LinearGradient(
+                                  colors: [Colors.teal, Colors.teal[200]],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(24.0)),
                             child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 30.0),
                               child: Text(
                                 "SIGN IN",
                                 style: TextStyle(
@@ -131,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     FlatButton(
                       onPressed: () {
-                          widget.toggleView();
+                        widget.toggleView();
                       },
                       child: Text(
                         'Register?',

@@ -34,6 +34,8 @@ dependencies:
   firebase_core: ^0.4.0+9
   flutter_screenutil: ^2.2.0
   firebase_auth: ^0.14.0+5
+  flutter_bluetooth_serial: ^0.2.2
+  scoped_model: ^1.0.1
   
 dev_dependencies:
   flutter_test:
@@ -74,6 +76,21 @@ flutter:
     - family: Raleway
       fonts:
           - asset: fonts/Raleway-SemiBold.ttf
+    - family: SF-Pro-Text-Regular
+      fonts:
+        - asset: assets/SF-Pro-Text-Regular.otf
+
+    - family: SF-Pro-Text-Bold
+      fonts:
+        - asset: assets/SF-Pro-Text-Bold.otf
+
+    - family: Calibre-Semibold
+      fonts:
+        - asset: assets/Calibre Semibold.otf
+
+    - family: CustomIcons
+      fonts:
+        - asset: assets/custom_icons.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

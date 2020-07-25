@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:sign_in/auth/login.dart';
@@ -8,46 +9,60 @@ class AuthDemo extends StatefulWidget {
   _AuthDemoState createState() => _AuthDemoState();
 }
 
-class _AuthDemoState extends State<AuthDemo> with SingleTickerProviderStateMixin{
-
+class _AuthDemoState extends State<AuthDemo>
+    with SingleTickerProviderStateMixin {
   String _animationName = "Flow";
   Animation<Offset> classificationAnimation;
   AnimationController controller;
   bool controly = false;
-  void toggleView(){
+  void toggleView() {
     setState(() {
       controly = !controly;
     });
   }
 
-  Widget showWidget(){
+  @override
+  void dispose() {
+    assert(() {
+      if (controller == null) {
+        throw FlutterError.fromParts(<DiagnosticsNode>[
+          ErrorSummary('AnimationController.dispose() called more than once.'),
+        ]);
+      }
+      return true;
+    }());
+    controller.dispose();
+    controller = null;
+    super.dispose();
+  }
+
+  Widget showWidget() {
     controller.forward();
-    return controly ? SlideTransition(
-      position: classificationAnimation,
-      child: (
-          Container(
-            alignment: Alignment.center,
-            child: LoginScreen(toggleView: toggleView),
+    return controly
+        ? SlideTransition(
+            position: classificationAnimation,
+            child: (Container(
+              alignment: Alignment.center,
+              child: LoginScreen(
+                toggleView: toggleView,
+                controller: dispose,
+              ),
+            )),
           )
-      ),
-    ) : SlideTransition(
-      position: classificationAnimation,
-      child: (
-          Container(
-            alignment: Alignment.center,
-            child: Register(toggleView: toggleView),
-          )
-      ),
-    );
+        : SlideTransition(
+            position: classificationAnimation,
+            child: (Container(
+              alignment: Alignment.center,
+              child: Register(toggleView: toggleView, controller: dispose),
+            )),
+          );
   }
 
   @override
   void initState() {
     super.initState();
     controller = AnimationController(
-        duration: Duration(milliseconds: 3000),
-        vsync: this
-    );
+        duration: Duration(milliseconds: 3000), vsync: this);
     classificationAnimation = Tween<Offset>(
       begin: Offset(6.0, 0.0),
       end: Offset.zero,
@@ -62,6 +77,7 @@ class _AuthDemoState extends State<AuthDemo> with SingleTickerProviderStateMixin
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     controller.forward();
@@ -74,7 +90,7 @@ class _AuthDemoState extends State<AuthDemo> with SingleTickerProviderStateMixin
             alignment: Alignment.topCenter,
             fit: BoxFit.cover,
             animation: _animationName,
-            callback: (String val){
+            callback: (String val) {
               setState(() {
                 _animationName = "Flow";
               });
