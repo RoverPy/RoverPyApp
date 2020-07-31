@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:sign_in/pages/controls_page.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import 'dart:math';
-<<<<<<< HEAD
 import 'package:sign_in/commons/collapsing_navigation_drawer.dart';
 import 'package:sign_in/services/AuthService.dart';
-=======
 
 import '../utils/themes.dart';
->>>>>>> e031d58f9b0c51d62e45afc0b7508d5b262840b5
 
 class HomePage extends StatefulWidget {
   @override
@@ -31,14 +28,15 @@ class _HomePageState extends State<HomePage> {
     });
 
     return Container(
-      decoration: BoxDecoration(
-          gradient: Styles.background),
+      decoration: BoxDecoration(gradient: Styles.background),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              SizedBox(height: 30.0,),
+              SizedBox(
+                height: 30.0,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
@@ -131,9 +129,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               InkWell(
-                onTap: () {
-
-                },
+                onTap: () {},
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Row(
@@ -182,7 +178,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              SizedBox(height: 30,),
+              SizedBox(
+                height: 30,
+              ),
             ],
           ),
         ),
