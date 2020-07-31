@@ -29,6 +29,7 @@ import 'package:sign_in/pages/controls_page.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import 'dart:math';
 import 'package:sign_in/commons/collapsing_navigation_drawer.dart';
+import 'package:sign_in/services/AuthService.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -108,7 +109,10 @@ class _HomePageState extends State<HomePage> {
                         size: 12.0,
                         color: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        AuthService obj = AuthService();
+                        obj.logOut();
+                      },
                     )
                   ],
                 ),
