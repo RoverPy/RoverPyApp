@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sign_in/pages/about.dart';
 import 'package:sign_in/pages/controls_page.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import 'dart:math';
@@ -165,7 +166,9 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ControlsPage()));
+                              builder: (context) => ControlsPage())
+//                              builder: (context) => AboutUs())
+                      );
                     },
                     child: Padding(
                       padding: EdgeInsets.only(left: 18.0),
