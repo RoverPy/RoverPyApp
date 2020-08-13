@@ -176,38 +176,63 @@ class _ControlsPageState extends State<ControlsPage> {
                           .accentColor),
                     ]),
                     child: Card(
-                      elevation: 5.0,
                       color: Theme
                           .of(context)
                           .backgroundColor,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      elevation: 5.0,
+                      child: Column(
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Belt Controls',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .headline6,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Belt Controls',
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .headline6,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 30.0,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16.0, 45.0, 16.0, 16.0),
-                            child: StepperTouch(
-                              size: 220.0,
-                              direction: Axis.vertical,
-                              initialValue: 'S',
-                              positiveValue: 'U',
-                              negativeValue: 'D',
-                              onEnd: onEndToggle,
-                              onHoldDown: onToggle,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  child: Center(
+                                    child: StepperTouch(
+                                      size: 220.0,
+                                      direction: Axis.vertical,
+                                      initialValue: 'S',
+                                      positiveValue: 'H',
+                                      negativeValue: 'J',
+                                      onEnd: onEndToggle,
+                                      onHoldDown: onToggle,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  child: Center(
+                                    child: StepperTouch(
+                                      size: 220.0,
+                                      direction: Axis.horizontal,
+                                      initialValue: 'S',
+                                      positiveValue: 'G',
+                                      negativeValue: 'I',
+                                      onEnd: onEndToggle,
+                                      onHoldDown: onToggle,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -337,38 +362,63 @@ class _ControlsPageState extends State<ControlsPage> {
                               .accentColor),
                         ]),
                         child: Card(
-                          elevation: 5.0,
                           color: Theme
                               .of(context)
                               .backgroundColor,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
+                          elevation: 5.0,
+                          child: Column(
                             children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Belt Controls',
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .headline6,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Rover Controls',
+                                      style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .headline6,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(
-                                width: 30.0,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16.0, 45.0, 16.0, 16.0),
-                                child: StepperTouch(
-                                  size: 220.0,
-                                  direction: Axis.vertical,
-                                  initialValue: 'S',
-                                  positiveValue: 'U',
-                                  negativeValue: 'D',
-                                  onEnd: onEndToggle,
-                                  onHoldDown: onToggle,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      child: Center(
+                                        child: StepperTouch(
+                                          size: 220.0,
+                                          direction: Axis.vertical,
+                                          initialValue: 'S',
+                                          positiveValue: 'H',
+                                          negativeValue: 'J',
+                                          onEnd: onEndToggle,
+                                          onHoldDown: onToggle,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      child: Center(
+                                        child: StepperTouch(
+                                          size: 220.0,
+                                          direction: Axis.horizontal,
+                                          initialValue: 'S',
+                                          positiveValue: 'G',
+                                          negativeValue: 'I',
+                                          onEnd: onEndToggle,
+                                          onHoldDown: onToggle,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
