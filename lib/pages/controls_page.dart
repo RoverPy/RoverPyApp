@@ -39,15 +39,12 @@ class _ControlsPageState extends State<ControlsPage> {
     if( widget.preSelectedServer != null ){
       _chatPage = ChatPage(server: widget.preSelectedServer,);
     }
-    print(_chatPage.server);
-    print( widget.preSelectedServer);
   }
 
   @override
   Widget build(BuildContext context) {
 
     stepperSize = (MediaQuery.of(context).size.height - (30.0+32.0+24.0)) / 3;
-    print(stepperSize);
 
     final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
@@ -67,6 +64,7 @@ class _ControlsPageState extends State<ControlsPage> {
         } else {
           var snackBar = SnackBar(
             content: Text('Not connected to any device', style: Theme.of(context).textTheme.headline6,),
+            duration: Duration(seconds: 1),
           );
           _key.currentState.showSnackBar(snackBar);
         }

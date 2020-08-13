@@ -127,10 +127,7 @@ class _HomePageState extends State<HomePage> {
                         size: 12.0,
                         color: Colors.white,
                       ),
-                      onPressed: () {
-                        AuthService obj = AuthService();
-                        obj.logOut();
-                      },
+                      onPressed: () {},
                     )
                   ],
                 ),
