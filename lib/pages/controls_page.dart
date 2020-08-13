@@ -9,16 +9,20 @@ import 'package:sign_in/commons/stepper_control.dart';
 import 'package:sign_in/services/ChatPage.dart';
 import 'package:sign_in/services/SelectBondedDevicePage.dart';
 import 'package:sign_in/utils/utils_export.dart';
-
 import '../services/ChatPage.dart';
 import '../utils/customIcons.dart';
 
 class ControlsPage extends StatefulWidget {
+  final BluetoothDevice preSelectedServer;
+
+  ControlsPage({this.preSelectedServer});
+
   @override
   _ControlsPageState createState() => _ControlsPageState();
 }
 
 class _ControlsPageState extends State<ControlsPage> {
+
   ChatPage _chatPage = ChatPage(server: null,);
   BluetoothConnection connection;
   bool isDisconnecting = false;
@@ -27,6 +31,16 @@ class _ControlsPageState extends State<ControlsPage> {
   bool get isConnected => connection != null && connection.isConnected;
 
   String prevChar = '';
+
+  @override
+  void initState() {
+    super.initState();
+    if( widget.preSelectedServer != null ){
+      _chatPage = ChatPage(server: widget.preSelectedServer,);
+    }
+    print(_chatPage.server);
+    print( widget.preSelectedServer);
+  }
 
   @override
   Widget build(BuildContext context) {
