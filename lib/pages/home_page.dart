@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sign_in/pages/about.dart';
 import 'package:sign_in/pages/controls_page.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import 'dart:math';
-import 'package:sign_in/commons/collapsing_navigation_drawer.dart';
 import 'package:sign_in/services/AuthService.dart';
 
 import '../utils/themes.dart';
@@ -50,17 +48,19 @@ class _HomePageState extends State<HomePage> {
                           fontFamily: "Calibre-Semibold",
                           letterSpacing: 1.0,
                         )),
-                    IconButton(
-                      icon: Icon(
-                        CustomIcons.option,
-                        size: 12.0,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        AuthService obj = AuthService();
-                        obj.logOut();
-                      },
-                    )
+                    PopupMenuButton<String>(
+                        icon: Icon(CustomIcons.option, size: 12.0, color: Colors.white,),
+                        itemBuilder: (context) {
+                          return [PopupMenuItem(
+                            child: Text('Logout'),
+                            value: '0',
+                          )];
+                          },
+                        onSelected: (value) {
+                          AuthService obj = AuthService();
+                          obj.logOut();
+                        }
+                        ),
                   ],
                 ),
               ),
