@@ -10,6 +10,7 @@ import 'dart:math';
 import 'package:sign_in/services/AuthService.dart';
 
 import '../utils/themes.dart';
+import 'about.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -169,9 +170,12 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ControlsPage(preSelectedServer: _device,))
+//                              builder: (context) => ControlsPage(preSelectedServer: _device,))
+                              builder: (context) => AboutUs()
+                          )
                       );
                     },
+
                     child: Padding(
                       padding: EdgeInsets.only(left: 18.0),
                       child: ClipRRect(
