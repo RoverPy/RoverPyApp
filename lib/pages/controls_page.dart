@@ -9,27 +9,42 @@ import 'package:sign_in/commons/stepper_control.dart';
 import 'package:sign_in/services/ChatPage.dart';
 import 'package:sign_in/services/SelectBondedDevicePage.dart';
 import 'package:sign_in/utils/utils_export.dart';
-
 import '../services/ChatPage.dart';
 import '../utils/customIcons.dart';
 
 class ControlsPage extends StatefulWidget {
+  final BluetoothDevice preSelectedServer;
+
+  ControlsPage({this.preSelectedServer});
+
   @override
   _ControlsPageState createState() => _ControlsPageState();
 }
 
 class _ControlsPageState extends State<ControlsPage> {
+
   ChatPage _chatPage = ChatPage(server: null,);
   BluetoothConnection connection;
   bool isDisconnecting = false;
   bool isConnecting = true;
+  double stepperSize;
 
   bool get isConnected => connection != null && connection.isConnected;
 
   String prevChar = '';
 
   @override
+  void initState() {
+    super.initState();
+    if( widget.preSelectedServer != null ){
+      _chatPage = ChatPage(server: widget.preSelectedServer,);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    stepperSize = (MediaQuery.of(context).size.height - (30.0+32.0+24.0)) / 3;
 
     final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
@@ -49,6 +64,7 @@ class _ControlsPageState extends State<ControlsPage> {
         } else {
           var snackBar = SnackBar(
             content: Text('Not connected to any device', style: Theme.of(context).textTheme.headline6,),
+            duration: Duration(seconds: 1),
           );
           _key.currentState.showSnackBar(snackBar);
         }
@@ -64,10 +80,7 @@ class _ControlsPageState extends State<ControlsPage> {
         decoration: BoxDecoration(
           gradient: Styles.background,
         ),
-        child: Builder(
-          builder: (context) {
-            if (MediaQuery.of(context).size.height > MediaQuery.of(context).size.width)
-              return Column(
+        child: Column(
                 children: <Widget>[
                   SizedBox(height: 30.0,),
                   Padding(
@@ -97,7 +110,6 @@ class _ControlsPageState extends State<ControlsPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      height: 220.0 + 16.0 + 24.0 + 32.0,
                       width: MediaQuery.of(context).size.width - 15.0,
                       decoration: BoxDecoration(boxShadow: [
                         BoxShadow(
@@ -108,6 +120,7 @@ class _ControlsPageState extends State<ControlsPage> {
                         color: Theme.of(context).backgroundColor,
                         elevation: 5.0,
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -129,7 +142,7 @@ class _ControlsPageState extends State<ControlsPage> {
                                   child: Container(
                                     child: Center(
                                       child: StepperTouch(
-                                        size: 220.0,
+                                        size: stepperSize,
                                         direction: Axis.vertical,
                                         initialValue: 'S',
                                         positiveValue: 'F',
@@ -145,7 +158,7 @@ class _ControlsPageState extends State<ControlsPage> {
                                   child: Container(
                                     child: Center(
                                       child: StepperTouch(
-                                        size: 220.0,
+                                        size: stepperSize,
                                         direction: Axis.horizontal,
                                         initialValue: 'S',
                                         positiveValue: 'L',
@@ -164,7 +177,6 @@ class _ControlsPageState extends State<ControlsPage> {
                     ),
                   ),
                   Container(
-                    height: 220.0 + 16.0 + 24.0 + 32.0,
                     width: MediaQuery
                         .of(context)
                         .size
@@ -181,6 +193,7 @@ class _ControlsPageState extends State<ControlsPage> {
                           .backgroundColor,
                       elevation: 5.0,
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -205,7 +218,7 @@ class _ControlsPageState extends State<ControlsPage> {
                                 child: Container(
                                   child: Center(
                                     child: StepperTouch(
-                                      size: 220.0,
+                                      size: stepperSize,
                                       direction: Axis.vertical,
                                       initialValue: 'S',
                                       positiveValue: 'H',
@@ -221,7 +234,7 @@ class _ControlsPageState extends State<ControlsPage> {
                                 child: Container(
                                   child: Center(
                                     child: StepperTouch(
-                                      size: 220.0,
+                                      size: stepperSize,
                                       direction: Axis.horizontal,
                                       initialValue: 'S',
                                       positiveValue: 'G',
@@ -239,52 +252,6 @@ class _ControlsPageState extends State<ControlsPage> {
                     ),
                   ),
                 ],
-              );
-            else
-              return Column(
-                children: <Widget>[
-                  SizedBox(height: 30.0,),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("RoverPy Controls",
-                          style: Theme.of(context).textTheme.headline3,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: PopupMenuButton<String>(
-                            icon: Icon(CustomIcons.option, size: 12.0, color: Colors.white,),
-                            itemBuilder: (context) {
-                              return [PopupMenuItem(
-                                child: Text('Connect to paired device to chat'),
-                                value: 'connect to bluetooth',
-                              )];
-                            },
-                            onSelected: (choice) => {connectMethod()},
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: 220.0 + 16.0 + 24.0 + 32.0,
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width / 2 - 15.0,
-                          decoration: BoxDecoration(boxShadow: [
-                                blurRadius: 5.0,
-                                color: Theme
-                          ]),
-                          child: Card(
-                            color: Theme
-                                .of(context)
               ),
       ),
       drawer: CollapsingNavDrawer(),
