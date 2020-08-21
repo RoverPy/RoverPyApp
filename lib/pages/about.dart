@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sign_in/models/customCard.dart';
+import 'package:sign_in/commons/custom_card.dart';
 import 'package:sign_in/models/developer_info.dart';
-
-import '../models/customCard.dart';
 
 class AboutUs extends StatefulWidget {
   @override
