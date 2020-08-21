@@ -41,6 +41,7 @@ dependencies:
   tflite: ^1.0.4
   image_picker: ^0.6.2+3
   firebase_ml_custom: ^0.0.2
+  image: ^2.1.14
   
 dev_dependencies:
   flutter_test:

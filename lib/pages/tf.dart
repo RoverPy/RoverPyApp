@@ -118,6 +118,9 @@ import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_ml_custom/firebase_ml_custom.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:typed_data';
+import 'dart:math';
+import 'package:image/image.dart' as img;
 
 class Tf extends StatefulWidget {
   @override
@@ -139,10 +142,13 @@ class _TfState extends State<Tf> {
       if (image == null) {
         return;
       }
+
       var labels = List<Map>.from(await Tflite.runModelOnImage(
         path: image.path,
         imageStd: 127.5,
       ));
+      print("label:");
+      print(labels);
       setState(() {
         _labels = labels;
         _image = image;
@@ -165,15 +171,16 @@ class _TfState extends State<Tf> {
   static Future<File> loadModelFromFirebase() async {
     try {
       // Create model with a name that is specified in the Firebase console
-      final model = FirebaseCustomRemoteModel('LeafDetection_Alpha');
+      final model = FirebaseCustomRemoteModel('LeafCustom');
 
       // Specify conditions when the model can be downloaded.
       // If there is no wifi access when the app is started,
       // this app will continue loading until the conditions are satisfied.
       final conditions = FirebaseModelDownloadConditions(
-          androidRequireWifi: true, iosAllowCellularAccess: false,
-          iosAllowBackgroundDownloading: true,
-          androidRequireDeviceIdle: false,
+        androidRequireWifi: true,
+        iosAllowCellularAccess: false,
+        iosAllowBackgroundDownloading: true,
+        androidRequireDeviceIdle: false,
       );
 
       // Create model manager associated with default Firebase App instance.
@@ -199,18 +206,16 @@ class _TfState extends State<Tf> {
   static Future<String> loadTFLiteModel(File modelFile) async {
     try {
       final appDirectory = await getApplicationDocumentsDirectory();
-      final labelsData =
-      await rootBundle.load("assets/dict.txt");
-      final labelsFile =
-      await File(appDirectory.path + "/dict.txt")
-          .writeAsBytes(labelsData.buffer.asUint8List(
-          labelsData.offsetInBytes, labelsData.lengthInBytes));
+      final labelsData = await rootBundle.load("assets/dict.txt");
+      final labelsFile = await File(appDirectory.path + "/dict.txt")
+          .writeAsBytes(labelsData.buffer
+              .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 
       assert(await Tflite.loadModel(
-        model: modelFile.path,
-        labels: labelsFile.path,
-        isAsset: false,
-      ) ==
+            model: modelFile.path,
+            labels: labelsFile.path,
+            isAsset: false,
+          ) ==
           "success");
       return "Model is loaded";
     } catch (exception) {
@@ -235,8 +240,8 @@ class _TfState extends State<Tf> {
           Column(
             children: _labels != null
                 ? _labels.map((label) {
-              return Text("${label["label"]}");
-            }).toList()
+                    return Text("${label["label"]}");
+                  }).toList()
                 : [],
           ),
         ],
@@ -270,10 +275,9 @@ class _TfState extends State<Tf> {
               padding: const EdgeInsets.only(bottom: 20.0),
               child: CircularProgressIndicator(),
             ),
-            Text("Please make sure that you are using wifi.",
-              style: TextStyle(
-                color: Colors.black
-              ),
+            Text(
+              "Please make sure that you are using wifi.",
+              style: TextStyle(color: Colors.black),
             ),
           ],
         ),
