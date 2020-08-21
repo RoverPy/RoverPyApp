@@ -18,6 +18,7 @@ class _AboutUsState extends State<AboutUs> {
         children: <Widget>[
           SizedBox(height: 40.0,),
           Card(
+            color: Colors.transparent,
             child: ClipPath(
               clipper: ShapeBorderClipper(
                 shape: RoundedRectangleBorder(

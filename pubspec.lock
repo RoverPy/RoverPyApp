@@ -99,13 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1+2"
-  firebase_ml_vision:
+  firebase_ml_custom:
     dependency: "direct main"
     description:
-      name: firebase_ml_vision
+      name: firebase_ml_custom
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.6+2"
+    version: "0.0.2"
   flare_dart:
     dependency: transitive
     description:
@@ -226,6 +226,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  path_provider:
+    dependency: "direct dev"
+    description:
+      name: path_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.6.11"
   path_provider_linux:
     dependency: transitive
     description:
@@ -233,6 +240,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1+2"
+  path_provider_macos:
+    dependency: transitive
+    description:
+      name: path_provider_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4+3"
   path_provider_platform_interface:
     dependency: transitive
     description:
