@@ -15,6 +15,10 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     final user = Provider.of<FirebaseUser>(context);
     print(user);
     SystemChrome.setPreferredOrientations([

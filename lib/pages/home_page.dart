@@ -1,9 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:sign_in/pages/controls_page.dart';
+import 'package:sign_in/pages/tf.dart';
+import 'package:sign_in/services/ChatPage.dart';
+import 'package:sign_in/services/SelectBondedDevicePage.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import 'dart:math';
+import 'package:sign_in/services/AuthService.dart';
 
 import '../utils/themes.dart';
+import 'about.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,6 +23,7 @@ var widgetAspectRatio = cardAspectRatio * 1.2;
 
 class _HomePageState extends State<HomePage> {
   var currentPage = images.length - 1.0;
+  BluetoothDevice _device;
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +35,15 @@ class _HomePageState extends State<HomePage> {
     });
 
     return Container(
-      decoration: BoxDecoration(
-          gradient: Styles.background),
+      decoration: BoxDecoration(gradient: Styles.background),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              SizedBox(height: 30.0,),
+              SizedBox(
+                height: 30.0,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
@@ -46,14 +56,19 @@ class _HomePageState extends State<HomePage> {
                           fontFamily: "Calibre-Semibold",
                           letterSpacing: 1.0,
                         )),
-                    IconButton(
-                      icon: Icon(
-                        CustomIcons.option,
-                        size: 12.0,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    )
+                    PopupMenuButton<String>(
+                        icon: Icon(CustomIcons.option, size: 12.0, color: Colors.white,),
+                        itemBuilder: (context) {
+                          return [PopupMenuItem(
+                            child: Text('Logout'),
+                            value: '0',
+                          )];
+                          },
+                        onSelected: (value) {
+                          AuthService obj = AuthService();
+                          obj.logOut();
+                        }
+                        ),
                   ],
                 ),
               ),
@@ -120,9 +135,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               InkWell(
-                onTap: () {
-
-                },
+                onTap: connectMethod,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Row(
@@ -158,8 +171,13 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ControlsPage()));
+//                              builder: (context) => ControlsPage(preSelectedServer: _device,))
+//                              builder: (context) => AboutUs()
+                              builder: (context) => Tf()
+                          )
+                      );
                     },
+
                     child: Padding(
                       padding: EdgeInsets.only(left: 18.0),
                       child: ClipRRect(
@@ -171,13 +189,95 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              SizedBox(height: 30,),
+              SizedBox(
+                height: 30,
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
+  void _onDataReceived(Uint8List data) {
+    // Allocate buffer for parsed data
+    int backspacesCounter = 0;
+    data.forEach((byte) {
+      if (byte == 8 || byte == 127) {
+        backspacesCounter++;
+      }
+    });
+    Uint8List buffer = Uint8List(data.length - backspacesCounter);
+    int bufferIndex = buffer.length;
+
+    // Apply backspace control character
+    backspacesCounter = 0;
+    for (int i = data.length - 1; i >= 0; i--) {
+      if (data[i] == 8 || data[i] == 127) {
+        backspacesCounter++;
+      } else {
+        if (backspacesCounter > 0) {
+          backspacesCounter--;
+        } else {
+          buffer[--bufferIndex] = data[i];
+        }
+      }
+    }
+
+    // Create message if there is new line character
+    String dataString = String.fromCharCodes(buffer);
+    int index = buffer.indexOf(13);
+  }
+
+  void connectMethod() async {
+    final BluetoothDevice selectedDevice =
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return SelectBondedDevicePage(
+              checkAvailability: false);
+        },
+      ),
+    );
+    ChatPage _chatPage = ChatPage(
+      server: selectedDevice,
+    );
+
+    if (selectedDevice != null) {
+      print('Connect -> selected ' + selectedDevice.address);
+      _device = selectedDevice;
+    } else {
+      print('Connect -> no device selected');
+    }
+    BluetoothConnection.toAddress(selectedDevice.address)
+        .then((_connection) {
+      print('Connected to the device');
+      BluetoothConnection connection = _connection;
+      var isDisconnecting = false;
+
+      connection.input.listen(_onDataReceived).onDone(() {
+        // Example: Detect which side closed the connection
+        // There should be `isDisconnecting` flag to show are we are (locally)
+        // in middle of disconnecting process, should be set before calling
+        // `dispose`, `finish` or `close`, which all causes to disconnect.
+        // If we except the disconnection, `onDone` should be fired as result.
+        // If we didn't except this (no flag set), it means closing by remote.
+        if (isDisconnecting) {
+          print('Disconnecting locally!');
+        } else {
+          print('Disconnected remotely!');
+        }
+        if (this.mounted) {
+          setState(() {
+          });
+        }
+      });
+    }).catchError((error) {
+      print('Cannot connect, exception occured');
+      print(error);
+    });
+  }
+
 }
 
 class CardScrollWidget extends StatelessWidget {

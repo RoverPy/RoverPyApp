@@ -13,7 +13,7 @@ class AuthService {
   Future<FirebaseUser> registerWithEmailAndPass(String e, String p) async {
     try {
       AuthResult res =
-          await _auth.createUserWithEmailAndPassword(email: e, password: p);
+          await _auth.createUserWithEmailAndPassword(email: e.trim(), password: p.trim());
       FirebaseUser user = res.user;
       return user;
     } catch (err) {
@@ -26,7 +26,7 @@ class AuthService {
   Future<FirebaseUser> signInWithEmailAndPass(String e, String p) async {
     try {
       AuthResult res =
-          await _auth.signInWithEmailAndPassword(email: e, password: p);
+          await _auth.signInWithEmailAndPassword(email: e.trim(), password: p.trim());
       FirebaseUser user = res.user;
       return user;
     } catch (err) {
