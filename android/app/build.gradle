@@ -29,6 +29,11 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     compileSdkVersion 28
 
+    aaptOptions {
+        noCompress "tflite"
+        noCompress 'lite'
+    }
+
     lintOptions {
         disable 'InvalidPackage'
     }
@@ -53,4 +58,15 @@ android {
 
 flutter {
     source '../..'
+}
+
+dependencies {
+    // ...
+    // Image labeling feature with automl model downloaded
+    // from firebase
+    implementation 'com.google.mlkit:image-labeling-automl:16.0.0'
+    implementation 'com.google.mlkit:linkfirebase:16.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 }

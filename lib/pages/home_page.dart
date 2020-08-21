@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:sign_in/pages/controls_page.dart';
+import 'package:sign_in/pages/tf.dart';
 import 'package:sign_in/services/ChatPage.dart';
 import 'package:sign_in/services/SelectBondedDevicePage.dart';
 import 'package:sign_in/utils/utils_export.dart';
@@ -171,7 +172,8 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
 //                              builder: (context) => ControlsPage(preSelectedServer: _device,))
-                              builder: (context) => AboutUs()
+//                              builder: (context) => AboutUs()
+                              builder: (context) => Tf()
                           )
                       );
                     },
