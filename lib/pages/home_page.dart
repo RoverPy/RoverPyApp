@@ -57,18 +57,23 @@ class _HomePageState extends State<HomePage> {
                           letterSpacing: 1.0,
                         )),
                     PopupMenuButton<String>(
-                        icon: Icon(CustomIcons.option, size: 12.0, color: Colors.white,),
+                        icon: Icon(
+                          CustomIcons.option,
+                          size: 12.0,
+                          color: Colors.white,
+                        ),
                         itemBuilder: (context) {
-                          return [PopupMenuItem(
-                            child: Text('Logout'),
-                            value: '0',
-                          )];
-                          },
+                          return [
+                            PopupMenuItem(
+                              child: Text('Logout'),
+                              value: '0',
+                            )
+                          ];
+                        },
                         onSelected: (value) {
                           AuthService obj = AuthService();
                           obj.logOut();
-                        }
-                        ),
+                        }),
                   ],
                 ),
               ),
@@ -173,11 +178,8 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(
 //                              builder: (context) => ControlsPage(preSelectedServer: _device,))
 //                             builder: (context) => AboutUs()
-                              builder: (context) => Tf()
-                          )
-                      );
+                              builder: (context) => Tf()));
                     },
-
                     child: Padding(
                       padding: EdgeInsets.only(left: 18.0),
                       child: ClipRRect(
@@ -230,12 +232,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void connectMethod() async {
-    final BluetoothDevice selectedDevice =
-    await Navigator.of(context).push(
+    final BluetoothDevice selectedDevice = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return SelectBondedDevicePage(
-              checkAvailability: false);
+          return SelectBondedDevicePage(checkAvailability: false);
         },
       ),
     );
@@ -249,8 +249,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       print('Connect -> no device selected');
     }
-    BluetoothConnection.toAddress(selectedDevice.address)
-        .then((_connection) {
+    BluetoothConnection.toAddress(selectedDevice.address).then((_connection) {
       print('Connected to the device');
       BluetoothConnection connection = _connection;
       var isDisconnecting = false;
@@ -268,8 +267,7 @@ class _HomePageState extends State<HomePage> {
           print('Disconnected remotely!');
         }
         if (this.mounted) {
-          setState(() {
-          });
+          setState(() {});
         }
       });
     }).catchError((error) {
@@ -277,7 +275,6 @@ class _HomePageState extends State<HomePage> {
       print(error);
     });
   }
-
 }
 
 class CardScrollWidget extends StatelessWidget {
