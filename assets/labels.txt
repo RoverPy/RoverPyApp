@@ -1,2 +1,2 @@
-0 Healthy Apple
-1 Unhealthy Apple
+unhealthy
+healthy

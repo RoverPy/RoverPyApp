@@ -129,12 +129,15 @@ class _TfState extends State<Tf> {
         children: [
           _image != null
               ? Image.file(_image)
-              : Text('Please select image to analyze.', style: TextStyle(color: Colors.black),),
+              : Text(
+                  'Please select image to analyze.',
+                  style: TextStyle(color: Colors.black),
+                ),
           Column(
             children: _labels != null
                 ? _labels.map((label) {
                     return Text(
-                      "${label["label"]}",
+                      "${label["label"]}, ${label["confidence"]}%",
                       style: TextStyle(color: Colors.black),
                     );
                   }).toList()
