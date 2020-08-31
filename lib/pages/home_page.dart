@@ -110,7 +110,12 @@ class _HomePageState extends State<HomePage> {
                       controller: controller,
                       reverse: true,
                       itemBuilder: (context, index) {
-                        return Container();
+                        return InkWell(
+                          onTap: () {
+                            int i = currentPage.round();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => pushTo[i]));
+                          },
+                            child: Container());
                       },
                     ),
                   )
@@ -176,9 +181,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-//                              builder: (context) => ControlsPage(preSelectedServer: _device,))
-//                             builder: (context) => AboutUs()
-                              builder: (context) => Tf()));
+                              builder: (context) => ControlsPage(preSelectedServer: _device,)));
                     },
                     child: Padding(
                       padding: EdgeInsets.only(left: 18.0),
@@ -354,16 +357,16 @@ class CardScrollWidget extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 12.0, bottom: 12.0),
-                              child: Container(
+                              child:Container(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 22.0, vertical: 6.0),
                                 decoration: BoxDecoration(
                                     color: Colors.blueAccent,
                                     borderRadius: BorderRadius.circular(20.0)),
-                                child: Text("Read Later",
-                                    style: TextStyle(color: Colors.white)),
+                                  child: Text("Read Later",
+                                      style: TextStyle(color: Colors.white)),
+                                ),
                               ),
-                            )
                           ],
                         ),
                       )

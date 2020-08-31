@@ -1,3 +1,7 @@
+import 'package:flutter/cupertino.dart';
+import 'package:sign_in/pages/about.dart';
+import 'package:sign_in/pages/tf.dart';
+
 List<String> images = [
   "assets/about.gif",
   "assets/user.gif",
@@ -10,4 +14,11 @@ List<String> title = [
   "User Profile",
   "Reports",
   "Map",
+];
+
+List<Widget> pushTo = [
+  AboutUs(),
+  AboutUs(),
+  Tf(),
+  AboutUs(),
 ];

@@ -34,6 +34,7 @@ class _TfState extends State<Tf> {
       var labels = List<Map>.from(await Tflite.runModelOnImage(
         path: image.path,
         imageStd: 127.5,
+        threshold: 0.69,
       ));
       print("label:");
       print(labels);
