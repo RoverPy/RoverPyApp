@@ -19,6 +19,7 @@ class _TfState extends State<Tf> {
   final ImagePicker _picker = ImagePicker();
   File _image;
   List<Map<dynamic, dynamic>> _labels;
+  double confidence = 0.0;
   //When the model is ready, _loaded changes to trigger the screen state change.
   Future<String> _loaded = loadModel();
 
@@ -34,13 +35,14 @@ class _TfState extends State<Tf> {
       var labels = List<Map>.from(await Tflite.runModelOnImage(
         path: image.path,
         imageStd: 127.5,
-        threshold: 0.69,
+        threshold: 0.8,
       ));
       print("label:");
       print(labels);
       setState(() {
         _labels = labels;
         _image = image;
+        confidence = labels[0]["confidence"] as double;
       });
     } catch (exception) {
       print("Failed on getting your image and it's labels: $exception");
@@ -60,7 +62,7 @@ class _TfState extends State<Tf> {
   static Future<File> loadModelFromFirebase() async {
     try {
       // Create model with a name that is specified in the Firebase console
-      final model = FirebaseCustomRemoteModel('BetaTesting');
+      final model = FirebaseCustomRemoteModel('ChonkerLeaf');
 
       // Specify conditions when the model can be downloaded.
       // If there is no wifi access when the app is started,
@@ -122,10 +124,12 @@ class _TfState extends State<Tf> {
         title: const Text('Firebase ML Custom example app'),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _image != null
               ? Image.file(_image)
-              : Text('Please select image to analyze.'),
+              : Text('Please select image to analyze.', style: TextStyle(color: Colors.black),),
           Column(
             children: _labels != null
                 ? _labels.map((label) {
@@ -135,6 +139,15 @@ class _TfState extends State<Tf> {
                     );
                   }).toList()
                 : [],
+          ),
+          Container(
+            width: 200,
+            child: Center(
+              child: LinearProgressIndicator(
+                value: confidence,
+                backgroundColor: Colors.grey.withOpacity(0.3),
+              ),
+            ),
           ),
         ],
       ),
