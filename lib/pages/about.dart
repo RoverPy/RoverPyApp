@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sign_in/commons/custom_card.dart';
 import 'package:sign_in/models/developer_info.dart';
+import 'package:sign_in/pages/Specific.dart';
 
 class AboutUs extends StatefulWidget {
   @override
@@ -67,11 +68,17 @@ class _AboutUsState extends State<AboutUs> {
             child: ListView.builder(
               itemCount: developers.length,
               itemBuilder: (context, index) {
-                return CustomCard(
-                  name: developers[index].name,
-                  image: developers[index].imageLink,
-                  subtitle: developers[index].otherInfo,
-                  url: developers[index].gitLink,
+                return InkWell(
+                  onTap: (){
+                    print("Hey");
+                    Navigator.push(context, MaterialPageRoute(builder: (_)=>Specific(info: developers[index],)));
+                  },
+                  child: CustomCard(
+                    name: developers[index].name,
+                    image: developers[index].imageLink,
+                    subtitle: developers[index].otherInfo,
+                    url: developers[index].gitLink,
+                  ),
                 );
               },
             ),

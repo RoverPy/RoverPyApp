@@ -15,26 +15,22 @@ class _CustomCardState extends State<CustomCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: InkWell(
-        onTap: (){},
-        splashColor: Colors.amberAccent,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(widget.image),
-            ),
-            title: Text(widget.name),
-            trailing: InkWell(
-              onTap: (){
-                launch(widget.url);
-              },
-              child: CircleAvatar(
-                backgroundColor: Colors.black,
-                backgroundImage: AssetImage('assets/github_logo.png'),
-              ),
-            )
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(widget.image),
           ),
+          title: Text(widget.name),
+          trailing: InkWell(
+            onTap: (){
+              launch(widget.url);
+            },
+            child: CircleAvatar(
+              backgroundColor: Colors.black,
+              backgroundImage: AssetImage('assets/github_logo.png'),
+            ),
+          )
         ),
       ),
     );
