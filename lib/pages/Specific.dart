@@ -3,7 +3,8 @@ import 'package:sign_in/models/developer_info.dart';
 
 class Specific extends StatefulWidget {
   final DevInfo info;
-  Specific({this.info});
+  final int i;
+  Specific({this.info, this.i});
   @override
   _SpecificState createState() => _SpecificState();
 }
@@ -33,9 +34,12 @@ class _SpecificState extends State<Specific> {
           Positioned(
             top: 1 / 3 * MediaQuery.of(context).size.height - 41.5,
             left: 1 / 2 * MediaQuery.of(context).size.width - 41.5,
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(widget.info.imageLink),
-              radius: 45.0,
+            child: Hero(
+              tag: "Profile${widget.i}",
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(widget.info.imageLink),
+                radius: 45.0,
+              ),
             ),
           ),
           Row(

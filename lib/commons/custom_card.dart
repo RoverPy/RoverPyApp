@@ -6,7 +6,8 @@ class CustomCard extends StatefulWidget {
   final String image;
   final String url;
   final String subtitle;
-  CustomCard({ this.name, this.image, this.url, this.subtitle});
+  final int i;
+  CustomCard({ this.name, this.image, this.url, this.subtitle, this.i});
   @override
   _CustomCardState createState() => _CustomCardState();
 }
@@ -18,8 +19,11 @@ class _CustomCardState extends State<CustomCard> {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(widget.image),
+          leading: Hero(
+            tag: "Profile${widget.i}",
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(widget.image),
+            ),
           ),
           title: Text(widget.name),
           trailing: InkWell(
