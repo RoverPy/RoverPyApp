@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:sign_in/models/developer_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Specific extends StatefulWidget {
   final DevInfo info;
   final int i;
-  Specific({this.info, this.i});
+  final String url;
+  Specific({this.info, this.i, this.url});
   @override
   _SpecificState createState() => _SpecificState();
 }
 
 class _SpecificState extends State<Specific> {
+  List<Color> colorList = [
+    new Color(0xffff5f6d),
+    new Color(0xffffc371),
+    new Color(0xff43cea2),
+    new Color(0xff185a9d),
+    new Color(0xff4568dc),
+    new Color(0xffb06ab3),
+    new Color(0xffeecda3),
+    new Color(0xffef629f)
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: new Color(0xff333333),
       body: Stack(
         // alignment: Alignment.center,
         children: [
@@ -22,8 +35,9 @@ class _SpecificState extends State<Specific> {
             height: 1 / 3 * MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.blue, Colors.teal],
-                stops: [0.0, 0.7],
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [colorList[2*(widget.i)], colorList[2*(widget.i)+1]],
               ),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(24.0),
@@ -75,8 +89,11 @@ class _SpecificState extends State<Specific> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
+        onPressed: () {
+          launch(widget.url);
+        },
+        tooltip: "Github",
+        child: Icon(Icons.code),
       ),
     );
   }

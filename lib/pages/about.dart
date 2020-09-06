@@ -70,7 +70,13 @@ class _AboutUsState extends State<AboutUs> {
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (_)=>Specific(info: developers[index], i:index)));
+                    Navigator.push(context, MaterialPageRoute(builder: (_)=>Specific(
+                          info: developers[index],
+                          i:index,
+                          url: developers[index].gitLink,
+                        )
+                      )
+                    );
                   },
                   child: CustomCard(
                     i:  index,
