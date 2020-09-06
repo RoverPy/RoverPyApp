@@ -36,21 +36,32 @@ class _SpecificState extends State<Specific> {
             left: 1 / 2 * MediaQuery.of(context).size.width - 41.5,
             child: Hero(
               tag: "Profile${widget.i}",
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(widget.info.imageLink),
-                radius: 45.0,
+              child: Material(
+                type: MaterialType.transparency,
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(widget.info.imageLink),
+                  radius: 45.0,
+                ),
               ),
             ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(
-                  widget.info.name,
-                  style: TextStyle(
-                    fontSize: 40.0,
-                    color: Colors.white,
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                Hero(
+                  tag: "Name${widget.i}",
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Text(
+                      widget.info.name,
+                      style: TextStyle(
+                        fontSize: 40.0,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
                 Text("This is a short description",

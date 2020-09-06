@@ -21,11 +21,27 @@ class _CustomCardState extends State<CustomCard> {
         child: ListTile(
           leading: Hero(
             tag: "Profile${widget.i}",
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(widget.image),
+            child: Material(
+              type: MaterialType.transparency,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(widget.image),
+                radius: 20.0,
+              ),
             ),
           ),
-          title: Text(widget.name),
+          title: Hero(
+            tag: "Name${widget.i}",
+              child: Material(
+                type: MaterialType.transparency,
+                child: Text(
+                    widget.name,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.black,
+                  ),
+                ),
+              )
+          ),
           trailing: InkWell(
             onTap: (){
               launch(widget.url);
@@ -33,6 +49,7 @@ class _CustomCardState extends State<CustomCard> {
             child: CircleAvatar(
               backgroundColor: Colors.black,
               backgroundImage: AssetImage('assets/github_logo.png'),
+              radius: 15.0,
             ),
           )
         ),
