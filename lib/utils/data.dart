@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sign_in/pages/about.dart';
+import 'package:sign_in/pages/process_page.dart';
 import 'package:sign_in/pages/tf.dart';
 
 List<String> images = [
@@ -19,6 +20,6 @@ List<String> title = [
 List<Widget> pushTo = [
   AboutUs(),
   AboutUs(),
-  Tf(),
+  ProcessingPage(),
   AboutUs(),
 ];

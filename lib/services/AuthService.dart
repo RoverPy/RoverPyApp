@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sign_in/models/user.dart';
 
 class AuthService {
   //setting up an instance of Firebase, making it final so no one can override it
@@ -9,13 +10,17 @@ class AuthService {
     return _auth.onAuthStateChanged;
   }
 
+  User createUser(FirebaseUser user) {
+    return user == null? null: User(uid: user.uid);
+  }
+
   //registering with email and pass
-  Future<FirebaseUser> registerWithEmailAndPass(String e, String p) async {
+  Future registerWithEmailAndPass(String e, String p) async {
     try {
       AuthResult res =
           await _auth.createUserWithEmailAndPassword(email: e.trim(), password: p.trim());
       FirebaseUser user = res.user;
-      return user;
+      return createUser(user);
     } catch (err) {
       print("Caught an error while signing up! Error: $err");
       return null;
@@ -23,12 +28,12 @@ class AuthService {
   }
 
   //setting up sign in with email and pass
-  Future<FirebaseUser> signInWithEmailAndPass(String e, String p) async {
+  Future signInWithEmailAndPass(String e, String p) async {
     try {
       AuthResult res =
           await _auth.signInWithEmailAndPassword(email: e.trim(), password: p.trim());
       FirebaseUser user = res.user;
-      return user;
+      return createUser(user);
     } catch (err) {
       print("Caught an error: $err");
       return null;

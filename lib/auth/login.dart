@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sign_in/auth/constants.dart';
+import 'package:sign_in/models/user.dart';
 import 'package:sign_in/services/AuthService.dart';
 
 class LoginScreen extends StatefulWidget {

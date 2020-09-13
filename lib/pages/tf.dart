@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sign_in/models/user.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_ml_custom/firebase_ml_custom.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:typed_data';
 import 'dart:math';
 import 'package:image/image.dart' as img;
@@ -16,6 +19,8 @@ class Tf extends StatefulWidget {
 }
 
 class _TfState extends State<Tf> {
+  final _storage = FirebaseStorage.instance;
+  final _firestore = Firestore.instance;
   final ImagePicker _picker = ImagePicker();
   File _image;
   List<Map<dynamic, dynamic>> _labels;
@@ -49,6 +54,17 @@ class _TfState extends State<Tf> {
       print('Continuing with the program...');
       rethrow;
     }
+  }
+
+  Future<List<ImageProvider>> processImages() async {
+    List<ImageProvider> images = [];
+    DocumentSnapshot doc = await _firestore.collection('users').document(currUser.uid).get();
+    List<dynamic> urls = doc.data['urls'];
+    Future.forEach(urls, (element) async {
+      var img = await _storage.ref().child('${currUser.uid}/$element').getDownloadURL();
+      images.add(NetworkImage(img));
+    });
+    return images;
   }
 
   /// Gets the model ready for inference on images.
@@ -212,4 +228,46 @@ class _TfState extends State<Tf> {
       ),
     );
   }
+
+  Widget processScreen() {
+    ImageProvider img;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Processing'),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              image: DecorationImage(image: img, fit: BoxFit.contain),
+            ),
+          ),
+          FutureBuilder(
+            future: processImages(),
+            builder: (context, snapshot) {
+              if( snapshot.connectionState == ConnectionState.waiting)
+                return CircularProgressIndicator();
+              else
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                      return Text("");
+                      }
+                  ),
+                );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
+
+
+//load model
+//get images
+//loop through images
+//change screen after processing each image is completed
