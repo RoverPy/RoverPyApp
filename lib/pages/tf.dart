@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sign_in/models/user.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_ml_custom/firebase_ml_custom.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:typed_data';
 import 'dart:math';
 import 'package:image/image.dart' as img;
@@ -19,8 +16,6 @@ class Tf extends StatefulWidget {
 }
 
 class _TfState extends State<Tf> {
-  final _storage = FirebaseStorage.instance;
-  final _firestore = Firestore.instance;
   final ImagePicker _picker = ImagePicker();
   File _image;
   List<Map<dynamic, dynamic>> _labels;
@@ -54,17 +49,6 @@ class _TfState extends State<Tf> {
       print('Continuing with the program...');
       rethrow;
     }
-  }
-
-  Future<List<ImageProvider>> processImages() async {
-    List<ImageProvider> images = [];
-    DocumentSnapshot doc = await _firestore.collection('users').document(currUser.uid).get();
-    List<dynamic> urls = doc.data['urls'];
-    Future.forEach(urls, (element) async {
-      var img = await _storage.ref().child('${currUser.uid}/$element').getDownloadURL();
-      images.add(NetworkImage(img));
-    });
-    return images;
   }
 
   /// Gets the model ready for inference on images.
@@ -116,13 +100,13 @@ class _TfState extends State<Tf> {
       final labelsData = await rootBundle.load("assets/labels.txt");
       final labelsFile = await File(appDirectory.path + "/labels.txt")
           .writeAsBytes(labelsData.buffer
-              .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
+          .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 
       assert(await Tflite.loadModel(
-            model: modelFile.path,
-            labels: labelsFile.path,
-            isAsset: false,
-          ) ==
+        model: modelFile.path,
+        labels: labelsFile.path,
+        isAsset: false,
+      ) ==
           "success");
       return "Model is loaded";
     } catch (exception) {
@@ -139,36 +123,38 @@ class _TfState extends State<Tf> {
       appBar: AppBar(
         title: const Text('Firebase ML Custom example app'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _image != null
-              ? Image.file(_image)
-              : Text(
-                  'Please select image to analyze.',
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _image != null
+                ? Image.file(_image)
+                : Text(
+              'Please select image to analyze.',
+              style: TextStyle(color: Colors.black),
+            ),
+            Column(
+              children: _labels != null
+                  ? _labels.map((label) {
+                return Text(
+                  "${label["label"]}, ${label["confidence"]}%",
                   style: TextStyle(color: Colors.black),
+                );
+              }).toList()
+                  : [],
+            ),
+            Container(
+              width: 200,
+              child: Center(
+                child: LinearProgressIndicator(
+                  value: confidence,
+                  backgroundColor: Colors.grey.withOpacity(0.3),
                 ),
-          Column(
-            children: _labels != null
-                ? _labels.map((label) {
-                    return Text(
-                      "${label["label"]}, ${label["confidence"]}%",
-                      style: TextStyle(color: Colors.black),
-                    );
-                  }).toList()
-                : [],
-          ),
-          Container(
-            width: 200,
-            child: Center(
-              child: LinearProgressIndicator(
-                value: confidence,
-                backgroundColor: Colors.grey.withOpacity(0.3),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: getImageLabels,
@@ -228,46 +214,4 @@ class _TfState extends State<Tf> {
       ),
     );
   }
-
-  Widget processScreen() {
-    ImageProvider img;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Processing'),
-      ),
-      body: Column(
-        children: [
-          Container(
-            height: 200,
-            decoration: BoxDecoration(
-              image: DecorationImage(image: img, fit: BoxFit.contain),
-            ),
-          ),
-          FutureBuilder(
-            future: processImages(),
-            builder: (context, snapshot) {
-              if( snapshot.connectionState == ConnectionState.waiting)
-                return CircularProgressIndicator();
-              else
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: snapshot.data.length,
-                      itemBuilder: (context, index) {
-                      return Text("");
-                      }
-                  ),
-                );
-            },
-          ),
-        ],
-      ),
-    );
-  }
 }
-
-
-//load model
-//get images
-//loop through images
-//change screen after processing each image is completed

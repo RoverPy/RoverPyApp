@@ -20,14 +20,16 @@ class _ProcessingPageState extends State<ProcessingPage> {
   final _firestore = Firestore.instance;
   final _storage = FirebaseStorage.instance;
   String _loaded;
-  List<dynamic> _imgUrls;
+  List<dynamic> _imgUrls = [];
   List<File> _images;
-  List<List<Map>> _labels = [];
-  String _currImg;
+  Future<List<List<Map>>> _labels;
+  bool _isLoaded = false;
+  String _currImg = 'https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg';
 
   Future<void> loadModel() async {
     final modelFile = await loadModelFromFirebase();
     _loaded =  await loadTFLiteModel(modelFile);
+    print(_loaded);
   }
 
   /// Downloads custom model from the Firebase console and return its file.
@@ -35,7 +37,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
   static Future<File> loadModelFromFirebase() async {
     try {
       // Create model with a name that is specified in the Firebase console
-      final model = FirebaseCustomRemoteModel('ChonkerLeaf');
+      final model = FirebaseCustomRemoteModel('TomatoModel');
 
       // Specify conditions when the model can be downloaded.
       // If there is no wifi access when the app is started,
@@ -90,9 +92,11 @@ class _ProcessingPageState extends State<ProcessingPage> {
     }
   }
 
-  Future<void> getImages() async {
-    DocumentSnapshot doc = await _firestore.collection('users').document(currUser.uid).get();
+  Future<List<dynamic>> getImages() async {
+    DocumentSnapshot doc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').get();
+    print(doc.data['urls'].length);
     _imgUrls = doc.data['urls'];
+    return doc.data['urls'];
   }
 
   Future<File> urlToFile(String imageUrl) async {
@@ -104,6 +108,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
     String tempPath = tempDir.path;
 // create a new file in temporary path with random file name.
     File file = new File('$tempPath'+ (rng.nextInt(100)).toString() +'.png');
+    print('$tempPath'+ (rng.nextInt(100)).toString() +'.png');
 // call http.get method and pass imageUrl into it to get response.
     http.Response response = await http.get(imageUrl);
 // write bodyBytes received in response to file.
@@ -135,21 +140,25 @@ class _ProcessingPageState extends State<ProcessingPage> {
     }
   }
 
-  processImages() {
-    Future.forEach(_imgUrls, (element) async {
-      File img = await urlToFile(element.toString());
-      var lb = await getImageLabels(img);
-      setState(() {
-        _labels.add(lb);
-        _currImg = element.toString();
-      });
+  Future<List<List<Map>>> loadStuff() async {
+    List<List<Map>> lbs = [];
+    await loadModel().then((value) {
+      getImages().then((value) => Future.forEach(value, (element) async {
+        File img = await urlToFile(element.toString());
+        List<Map> label = await getImageLabels(img);
+        lbs.add(label);
+      }));
+    }).then((value) {
+      return lbs;
     });
-
+//    return [];
   }
 
-  loadStuff() async {
-    await loadModel();
-    await getImages();
+  
+  @override
+  void initState() {
+    _labels = loadStuff();
+    super.initState();
   }
 
   @override
@@ -160,23 +169,22 @@ class _ProcessingPageState extends State<ProcessingPage> {
         title: Text('Processing'),
       ),
       body: FutureBuilder(
-        future: loadStuff(),
+        future: _labels,
         builder: (context, snapshot) {
           if( snapshot.connectionState == ConnectionState.waiting)
             return CircularProgressIndicator();
           else {
-            if( _labels.length == 0)
-              processImages();
-            return Column(
-              children: [
-                Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: NetworkImage(_currImg)),
-                  ),
-                )
-              ],
-            );
+//            print(_imgUrls.length);
+          if( snapshot.data != null && snapshot.data.length != 0)
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                  print('item: ${snapshot.data[index]}');
+                    return Text('${snapshot.data[index]}');
+                  }
+              );
+          else
+            return Text('empty');
           }
         },
       ),
