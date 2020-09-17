@@ -22,13 +22,14 @@ class _ProcessingPageState extends State<ProcessingPage> {
   String _loaded;
   List<dynamic> _imgUrls = [];
   List<File> _images;
-  Future<List<List<Map>>> _labels;
+  List<List<Map>> _labels = [];
   bool _isLoaded = false;
-  String _currImg = 'https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg';
+  String _currImg =
+      'https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg';
 
   Future<void> loadModel() async {
     final modelFile = await loadModelFromFirebase();
-    _loaded =  await loadTFLiteModel(modelFile);
+    _loaded = await loadTFLiteModel(modelFile);
     print(_loaded);
   }
 
@@ -75,13 +76,13 @@ class _ProcessingPageState extends State<ProcessingPage> {
       final labelsData = await rootBundle.load("assets/labels.txt");
       final labelsFile = await File(appDirectory.path + "/labels.txt")
           .writeAsBytes(labelsData.buffer
-          .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
+              .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 
       assert(await Tflite.loadModel(
-        model: modelFile.path,
-        labels: labelsFile.path,
-        isAsset: false,
-      ) ==
+            model: modelFile.path,
+            labels: labelsFile.path,
+            isAsset: false,
+          ) ==
           "success");
       return "Model is loaded";
     } catch (exception) {
@@ -93,7 +94,10 @@ class _ProcessingPageState extends State<ProcessingPage> {
   }
 
   Future<List<dynamic>> getImages() async {
-    DocumentSnapshot doc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').get();
+    DocumentSnapshot doc = await _firestore
+        .collection('users')
+        .document('HHJjcEassOW3nRJEE65tYXmTJzn2')
+        .get();
     print(doc.data['urls'].length);
     _imgUrls = doc.data['urls'];
     return doc.data['urls'];
@@ -107,8 +111,8 @@ class _ProcessingPageState extends State<ProcessingPage> {
 // get temporary path from temporary directory.
     String tempPath = tempDir.path;
 // create a new file in temporary path with random file name.
-    File file = new File('$tempPath'+ (rng.nextInt(100)).toString() +'.png');
-    print('$tempPath'+ (rng.nextInt(100)).toString() +'.png');
+    File file = new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
+    print('$tempPath' + (rng.nextInt(100)).toString() + '.png');
 // call http.get method and pass imageUrl into it to get response.
     http.Response response = await http.get(imageUrl);
 // write bodyBytes received in response to file.
@@ -140,51 +144,73 @@ class _ProcessingPageState extends State<ProcessingPage> {
     }
   }
 
-  Future<List<List<Map>>> loadStuff() async {
-    List<List<Map>> lbs = [];
-    await loadModel().then((value) {
-      getImages().then((value) => Future.forEach(value, (element) async {
-        File img = await urlToFile(element.toString());
-        List<Map> label = await getImageLabels(img);
-        lbs.add(label);
-      }));
-    }).then((value) {
-      return lbs;
-    });
-//    return [];
-  }
+  // Future<List<List<Map>>> loadStuff() async {
+  //   List<List<Map>> lbs = [];
+  //   _labels = loadModel().then((value) {
+  //     getImages().then((value) => Future.forEach(value, (element) async {
+  //           File img = await urlToFile(element.toString());
+  //           List<Map> label = await getImageLabels(img);
+  //           lbs.add(label);
+  //         }));
+  //   }).then((value) {
+  //     return lbs;
+  //   });
+  // }
 
-  
-  @override
-  void initState() {
-    _labels = loadStuff();
-    super.initState();
+  Future<void> processImg(List<DocumentSnapshot> docs) async {
+    await Future.forEach(docs, (element) async {
+      print('img: ${element.data['img']}');
+      File img = await urlToFile(element.data['img']);
+      List<Map> lb = await getImageLabels(img);
+      _labels.add(lb);
+      //     .then((value) => getImageLabels(value))
+      //     .then((value) {
+      //   print(value[0]);
+      //   _labels.add(value);
+      // });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Processing'),
       ),
       body: FutureBuilder(
-        future: _labels,
-        builder: (context, snapshot) {
-          if( snapshot.connectionState == ConnectionState.waiting)
+        future: loadModel(),
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting)
             return CircularProgressIndicator();
           else {
-//            print(_imgUrls.length);
-          if( snapshot.data != null && snapshot.data.length != 0)
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                  print('item: ${snapshot.data[index]}');
-                    return Text('${snapshot.data[index]}');
-                  }
-              );
-          else
-            return Text('empty');
+            return StreamBuilder(
+                stream: _firestore
+                    .collection('users')
+                    .document('HHJjcEassOW3nRJEE65tYXmTJzn2')
+                    .collection('urls')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData)
+                    return CircularProgressIndicator();
+                  else
+                    return FutureBuilder(
+                      future: processImg(snapshot.data.documents),
+                      builder: (context, snaps) {
+                        if (snaps.connectionState == ConnectionState.done) {
+                          print(_labels.length);
+                          return ListView.builder(
+                              itemCount: _labels.length,
+                              itemBuilder: (context, index) {
+                                return Text(
+                                  "${_labels[index]}",
+                                  style: TextStyle(color: Colors.black),
+                                );
+                              });
+                        } else
+                          return CircularProgressIndicator();
+                      },
+                    );
+                });
           }
         },
       ),
