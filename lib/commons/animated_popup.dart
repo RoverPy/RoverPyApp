@@ -20,7 +20,7 @@ class _AnimatedPopUpState extends State<AnimatedPopUp> with TickerProviderStateM
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    _animation = Tween<int>(end: widget.images.length, begin: 0).animate(elapsed);
+//    _animation = Tween<int>(end: widget.images.length, begin: 0).animate(elapsed);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {increment();});
   }
 
