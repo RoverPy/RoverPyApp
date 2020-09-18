@@ -360,7 +360,7 @@ packages:
     source: hosted
     version: "1.4.4"
   quiver:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: quiver
       url: "https://pub.dartlang.org"

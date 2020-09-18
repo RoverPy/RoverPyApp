@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ml_custom/firebase_ml_custom.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sign_in/commons/animated_popup.dart';
 import 'package:sign_in/models/user.dart';
 import 'package:tflite/tflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -197,7 +199,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
                       future: processImg(snapshot.data.documents),
                       builder: (context, snaps) {
                         if (snaps.connectionState == ConnectionState.done) {
-                          print(_labels.length);
+                          Navigator.of(context).pop();
                           return ListView.builder(
                               itemCount: _labels.length,
                               itemBuilder: (context, index) {
@@ -206,8 +208,12 @@ class _ProcessingPageState extends State<ProcessingPage> {
                                   style: TextStyle(color: Colors.black),
                                 );
                               });
-                        } else
-                          return CircularProgressIndicator();
+                        } else {
+                          List<dynamic> urls = snapshot.data.documents.map((e) => e.data['img'].toString()).toList();
+                          print('len: ${urls.length}');
+                          showAnimation(urls);
+                          return Container();
+                        }
                       },
                     );
                 });
@@ -215,5 +221,16 @@ class _ProcessingPageState extends State<ProcessingPage> {
         },
       ),
     );
+  }
+
+  showAnimation(List<dynamic> urls) async {
+    await Future.delayed(Duration(microseconds: 1));
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: AnimatedPopUp(images: urls),
+          );
+        });
   }
 }
