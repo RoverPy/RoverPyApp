@@ -11,24 +11,37 @@ class AnimatedPopUp extends StatefulWidget {
   _AnimatedPopUpState createState() => _AnimatedPopUpState();
 }
 
-class _AnimatedPopUpState extends State<AnimatedPopUp> with TickerProviderStateMixin {
+class _AnimatedPopUpState extends State<AnimatedPopUp> {
+  int elapsed = 0;
 
-  Widget animation(BuildContext context) {
-    return TweenAnimationBuilder<int>(
-      tween: Tween<int>(begin: 0, end: widget.images.length-1),
-      duration: Duration(milliseconds: 500*widget.images.length),
-      builder: (context, index, child) {
-        return Image(image: NetworkImage(widget.images[index]),);
-      },
-    );
+  void _incrementCounter() {
+
+    final cd = CountdownTimer(Duration(seconds: widget.images.length-1), Duration(milliseconds: 500));
+    cd.listen((data) {
+      setState(() {
+        elapsed = cd.elapsed.inSeconds;
+        print(elapsed);
+      });
+    }, onDone: () {
+      cd.cancel();
+      Navigator.pop(context);
+    });
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {_incrementCounter();});
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width - 20.0,
-      height: MediaQuery.of(context).size.width - 20.0,
-      child: animation(context),
+    return AnimatedSwitcher(
+      child: Image(
+          image: NetworkImage(widget.images[elapsed]),
+          key: ValueKey(elapsed)),
+      duration: Duration(seconds: 1),
     );
   }
 }

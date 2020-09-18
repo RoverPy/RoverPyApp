@@ -187,8 +187,6 @@ class _ProcessingPageState extends State<ProcessingPage> {
                       future: processImg(snapshot.data.documents),
                       builder: (context, snaps) {
                         if (snaps.connectionState == ConnectionState.done) {
-                          print(_labels.length);
-                          Navigator.pop(context);
                           return ListView.builder(
                               itemCount: _labels.length,
                               itemBuilder: (context, index) {
