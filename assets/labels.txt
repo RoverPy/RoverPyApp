@@ -1,2 +1,2 @@
-unhealthy
-healthy
+0 early_blight
+1 seporia

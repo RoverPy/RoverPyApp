@@ -100,13 +100,13 @@ class _TfState extends State<Tf> {
       final labelsData = await rootBundle.load("assets/labels.txt");
       final labelsFile = await File(appDirectory.path + "/labels.txt")
           .writeAsBytes(labelsData.buffer
-              .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
+          .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 
       assert(await Tflite.loadModel(
-            model: modelFile.path,
-            labels: labelsFile.path,
-            isAsset: false,
-          ) ==
+        model: modelFile.path,
+        labels: labelsFile.path,
+        isAsset: false,
+      ) ==
           "success");
       return "Model is loaded";
     } catch (exception) {
@@ -123,36 +123,38 @@ class _TfState extends State<Tf> {
       appBar: AppBar(
         title: const Text('Firebase ML Custom example app'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _image != null
-              ? Image.file(_image)
-              : Text(
-                  'Please select image to analyze.',
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _image != null
+                ? Image.file(_image)
+                : Text(
+              'Please select image to analyze.',
+              style: TextStyle(color: Colors.black),
+            ),
+            Column(
+              children: _labels != null
+                  ? _labels.map((label) {
+                return Text(
+                  "${label["label"]}, ${label["confidence"]}%",
                   style: TextStyle(color: Colors.black),
+                );
+              }).toList()
+                  : [],
+            ),
+            Container(
+              width: 200,
+              child: Center(
+                child: LinearProgressIndicator(
+                  value: confidence,
+                  backgroundColor: Colors.grey.withOpacity(0.3),
                 ),
-          Column(
-            children: _labels != null
-                ? _labels.map((label) {
-                    return Text(
-                      "${label["label"]}, ${label["confidence"]}%",
-                      style: TextStyle(color: Colors.black),
-                    );
-                  }).toList()
-                : [],
-          ),
-          Container(
-            width: 200,
-            child: Center(
-              child: LinearProgressIndicator(
-                value: confidence,
-                backgroundColor: Colors.grey.withOpacity(0.3),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: getImageLabels,
