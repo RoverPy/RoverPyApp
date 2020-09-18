@@ -12,20 +12,15 @@ class AnimatedPopUp extends StatefulWidget {
 }
 
 class _AnimatedPopUpState extends State<AnimatedPopUp> with TickerProviderStateMixin {
-  AnimationController _controller;
-  Animation _animation;
-  int elapsed = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this);
-//    _animation = Tween<int>(end: widget.images.length, begin: 0).animate(elapsed);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {increment();});
-  }
-
-  void increment() async {
-
+  Widget animation(BuildContext context) {
+    return TweenAnimationBuilder<int>(
+      tween: Tween<int>(begin: 0, end: widget.images.length-1),
+      duration: Duration(milliseconds: 500*widget.images.length),
+      builder: (context, index, child) {
+        return Image(image: NetworkImage(widget.images[index]),);
+      },
+    );
   }
 
   @override
@@ -33,9 +28,7 @@ class _AnimatedPopUpState extends State<AnimatedPopUp> with TickerProviderStateM
     return Container(
       width: MediaQuery.of(context).size.width - 20.0,
       height: MediaQuery.of(context).size.width - 20.0,
-      decoration: BoxDecoration(
-        image: DecorationImage(image: NetworkImage(widget.images[elapsed].toString()))
-      ),
+      child: animation(context),
     );
   }
 }

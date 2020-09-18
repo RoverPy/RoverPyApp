@@ -100,7 +100,7 @@ class _ProcessingPageState extends State<ProcessingPage> {
         .collection('users')
         .document('HHJjcEassOW3nRJEE65tYXmTJzn2')
         .get();
-    print(doc.data['urls'].length);
+//    print(doc.data['urls'].length);
     _imgUrls = doc.data['urls'];
     return doc.data['urls'];
   }
@@ -136,8 +136,8 @@ class _ProcessingPageState extends State<ProcessingPage> {
         imageStd: 127.5,
         threshold: 0.8,
       ));
-      print("label:");
-      print(labels);
+//      print("label:");
+//      print(labels);
       return labels;
     } catch (exception) {
       print("Failed on getting your image and it's labels: $exception");
@@ -146,25 +146,13 @@ class _ProcessingPageState extends State<ProcessingPage> {
     }
   }
 
-  // Future<List<List<Map>>> loadStuff() async {
-  //   List<List<Map>> lbs = [];
-  //   _labels = loadModel().then((value) {
-  //     getImages().then((value) => Future.forEach(value, (element) async {
-  //           File img = await urlToFile(element.toString());
-  //           List<Map> label = await getImageLabels(img);
-  //           lbs.add(label);
-  //         }));
-  //   }).then((value) {
-  //     return lbs;
-  //   });
-  // }
-
   Future<void> processImg(List<DocumentSnapshot> docs) async {
     await Future.forEach(docs, (element) async {
       print('img: ${element.data['img']}');
       File img = await urlToFile(element.data['img']);
       List<Map> lb = await getImageLabels(img);
       _labels.add(lb);
+      print(lb);
       //     .then((value) => getImageLabels(value))
       //     .then((value) {
       //   print(value[0]);
@@ -199,7 +187,8 @@ class _ProcessingPageState extends State<ProcessingPage> {
                       future: processImg(snapshot.data.documents),
                       builder: (context, snaps) {
                         if (snaps.connectionState == ConnectionState.done) {
-                          Navigator.of(context).pop();
+                          print(_labels.length);
+                          Navigator.pop(context);
                           return ListView.builder(
                               itemCount: _labels.length,
                               itemBuilder: (context, index) {
@@ -208,7 +197,8 @@ class _ProcessingPageState extends State<ProcessingPage> {
                                   style: TextStyle(color: Colors.black),
                                 );
                               });
-                        } else {
+                        }
+                        else {
                           List<dynamic> urls = snapshot.data.documents.map((e) => e.data['img'].toString()).toList();
                           print('len: ${urls.length}');
                           showAnimation(urls);
