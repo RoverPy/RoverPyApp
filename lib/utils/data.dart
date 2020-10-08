@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:sign_in/pages/about.dart';
 import 'package:sign_in/pages/process_page.dart';
 import 'package:sign_in/pages/tf.dart';
+import 'package:sign_in/pages/map_page.dart';
 
 List<String> images = [
   "assets/about.gif",
@@ -21,5 +22,5 @@ List<Widget> pushTo = [
   AboutUs(),
   AboutUs(),
   ProcessingPage(),
-  AboutUs(),
+  MapPage(),
 ];

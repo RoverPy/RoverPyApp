@@ -137,47 +137,69 @@ public class SshPlugin implements MethodCallHandler, StreamHandler {
 
     @Override
     public void onMethodCall(MethodCall call, Result rawResult) {
+        System.out.println(call.method);
         Result result = new MethodResultWrapper(rawResult);
-        if (call.method.equals("connectToHost")) {
-            connectToHost((HashMap) call.arguments, result);
-        } else if (call.method.equals("execute")) {
-            execute((HashMap) call.arguments, result);
-        } else if (call.method.equals("portForwardL")) {
-            portForwardL((HashMap) call.arguments, result);
-        } else if (call.method.equals("startShell")) {
-            startShell((HashMap) call.arguments, result);
-        } else if (call.method.equals("writeToShell")) {
-            writeToShell((HashMap) call.arguments, result);
-        } else if (call.method.equals("closeShell")) {
-            closeShell((HashMap) call.arguments);
-        } else if (call.method.equals("connectSFTP")) {
-            connectSFTP((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpLs")) {
-            sftpLs((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpRename")) {
-            sftpRename((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpMkdir")) {
-            sftpMkdir((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpRm")) {
-            sftpRm((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpRmdir")) {
-            sftpRmdir((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpDownload")) {
-            sftpDownload((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpUpload")) {
-            sftpUpload((HashMap) call.arguments, result);
-        } else if (call.method.equals("sftpCancelDownload")) {
-            sftpCancelDownload((HashMap) call.arguments);
-        } else if (call.method.equals("sftpCancelUpload")) {
-            sftpCancelUpload((HashMap) call.arguments);
-        } else if (call.method.equals("disconnectSFTP")) {
-            disconnectSFTP((HashMap) call.arguments);
-        } else if (call.method.equals("disconnect")) {
-            disconnect((HashMap) call.arguments);
-        } else if (call.method.equals("isConnected")) {
-            isConnected((HashMap) call.arguments, result);
-        } else {
-            result.notImplemented();
+        switch (call.method) {
+            case "connectToHost":
+                connectToHost((HashMap) call.arguments, result);
+                break;
+            case "execute":
+                execute((HashMap) call.arguments, result);
+                break;
+            case "portForwardL":
+                portForwardL((HashMap) call.arguments, result);
+                break;
+            case "startShell":
+                startShell((HashMap) call.arguments, result);
+                break;
+            case "writeToShell":
+                writeToShell((HashMap) call.arguments, result);
+                break;
+            case "closeShell":
+                closeShell((HashMap) call.arguments);
+                break;
+            case "connectSFTP":
+                connectSFTP((HashMap) call.arguments, result);
+                break;
+            case "sftpLs":
+                sftpLs((HashMap) call.arguments, result);
+                break;
+            case "sftpRename":
+                sftpRename((HashMap) call.arguments, result);
+                break;
+            case "sftpMkdir":
+                sftpMkdir((HashMap) call.arguments, result);
+                break;
+            case "sftpRm":
+                sftpRm((HashMap) call.arguments, result);
+                break;
+            case "sftpRmdir":
+                sftpRmdir((HashMap) call.arguments, result);
+                break;
+            case "sftpDownload":
+                sftpDownload((HashMap) call.arguments, result);
+                break;
+            case "sftpUpload":
+                sftpUpload((HashMap) call.arguments, result);
+                break;
+            case "sftpCancelDownload":
+                sftpCancelDownload((HashMap) call.arguments);
+                break;
+            case "sftpCancelUpload":
+                sftpCancelUpload((HashMap) call.arguments);
+                break;
+            case "disconnectSFTP":
+                disconnectSFTP((HashMap) call.arguments);
+                break;
+            case "disconnect":
+                disconnect((HashMap) call.arguments);
+                break;
+            case "isConnected":
+                isConnected((HashMap) call.arguments, result);
+                break;
+            default:
+                result.notImplemented();
+                break;
         }
     }
 
