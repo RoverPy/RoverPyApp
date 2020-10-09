@@ -83,10 +83,10 @@ class _MapPageState extends State<MapPage> {
 
     QuerySnapshot docs = await Firestore.instance.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection('urls').getDocuments();
 
-    docs.documents.forEach((element) {
-      _markerLocations.add(LatLng(element.data['lat'], element.data['lng']));
-      _labels.add(element.data['label']);
-    });
+//    docs.documents.forEach((element) {
+//      _markerLocations.add(LatLng(element.data['lat'], element.data['lng']));
+//      _labels.add(element.data['label']);
+//    });
 
     for (int i=0; i< docs.documents.length; i++) {
 
