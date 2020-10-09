@@ -4,6 +4,7 @@ import 'package:sign_in/pages/process_page.dart';
 import 'package:sign_in/pages/tf.dart';
 import 'package:sign_in/pages/map_page.dart';
 import 'package:sign_in/pages/video_page.dart';
+import 'package:sign_in/pages/profile.dart';
 
 List<String> images = [
   "assets/about.gif",
