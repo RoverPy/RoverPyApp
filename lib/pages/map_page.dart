@@ -147,9 +147,9 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Map Page'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Map Page'),
+      // ),
       body: Stack(
         children: <Widget>[
           // Google Map widget
@@ -193,6 +193,17 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
         ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'fab',
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        elevation: 5.0,
+        tooltip: "Go back",
+        child: Icon(Icons.arrow_back),
       ),
     );
   }
