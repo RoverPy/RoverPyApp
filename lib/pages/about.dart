@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in/commons/custom_card.dart';
 import 'package:sign_in/models/developer_info.dart';
@@ -32,7 +33,7 @@ class _AboutUsState extends State<AboutUs> {
                 padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 40.0),
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: NetworkImage('https://static.dribbble.com/users/3181935/screenshots/10598987/media/82ab7346bace7f63944f1ef3d2ee3210.jpg'),
+                        image: AssetImage('assets/aboutUs.png'),
                         fit: BoxFit.cover
                     )
                 ),
@@ -68,29 +69,105 @@ class _AboutUsState extends State<AboutUs> {
             child: ListView.builder(
               itemCount: developers.length,
               itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (_)=>Specific(
-                          info: developers[index],
-                          i:index,
-                          url: developers[index].gitLink,
-                        )
-                      )
-                    );
-                  },
-                  child: CustomCard(
-                    i:  index,
-                    name: developers[index].name,
-                    image: developers[index].imageLink,
-                    subtitle: developers[index].otherInfo,
-                    url: developers[index].gitLink,
-                  ),
-                );
+                // return InkWell(
+                //   onTap: (){
+                    // Navigator.push(context, MaterialPageRoute(builder: (_)=>Specific(
+                    //       info: developers[index],
+                    //       i:index,
+                    //       url: developers[index].gitLink,
+                    //     )
+                    //   )
+                    // );
+                //   },
+                //   child: CustomCard(
+                //     i:  index,
+                //     name: developers[index].name,
+                //     image: developers[index].imageLink,
+                //     subtitle: developers[index].otherInfo,
+                //     url: developers[index].gitLink,
+                //   ),
+                // );
+                return SafeArea(
+                        child: Column(
+                          children: [
+                            CupertinoButton(
+                              child: Container(
+                                height: 150,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/RoverDev$index.jpg"),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.fromLTRB(15, 15, 0, 0),
+                                      child: Hero(
+                                        tag: "Name$index",
+                                        child: Material(
+                                          type: MaterialType.transparency,
+                                          child: Text(
+                                            developers[index].name,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      // height: 50.0,
+                                      // alignment: Alignment.centerLeft,
+                                      margin: EdgeInsets.fromLTRB(0, 10, 15, 0),
+                                      child: Hero(
+                                        tag: "Profile$index",
+                                        child: Material(
+                                          type: MaterialType.transparency,
+                                          child: CircleAvatar(
+                                            backgroundImage: AssetImage(developers[index].imageLink),
+                                            radius: 20.0,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_)=>Specific(
+                                      info: developers[index],
+                                      i:index,
+                                      url: developers[index].gitLink,
+                                    )
+                                  )
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      );
               },
             ),
           ),
         ],
-      )
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'fab',
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        elevation: 5.0,
+        tooltip: "Go back",
+        child: Icon(Icons.arrow_back),
+      ),
     );
   }
 }

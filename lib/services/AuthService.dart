@@ -28,13 +28,26 @@ class AuthService {
   }
 
   //setting up sign in with email and pass
-  Future signInWithEmailAndPass(String e, String p) async {
+  Future signInWithEmailAndPass(String e, String p, String n) async {
     try {
       AuthResult res =
           await _auth.signInWithEmailAndPassword(email: e.trim(), password: p.trim());
+      UserUpdateInfo updateInfo = UserUpdateInfo();
+      updateInfo.displayName = n;
+      res.user.updateProfile(updateInfo);
       FirebaseUser user = res.user;
       return createUser(user);
     } catch (err) {
+      print("Caught an error: $err");
+      return null;
+    }
+  }
+
+  Future getCurrentUserName() async {
+    try{
+      FirebaseUser user = await _auth.currentUser();
+      return user.displayName;
+    }catch (err){
       print("Caught an error: $err");
       return null;
     }

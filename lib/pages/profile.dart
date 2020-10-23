@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sign_in/pages/constants_profile.dart';
 import 'package:sign_in/pages/QuickAccess.dart';
+import 'package:sign_in/services/AuthService.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -16,7 +17,24 @@ class _ProfilePageState extends State<ProfilePage> {
     QuickAccess('Buy us\na coffee', '🥤🥤🥤',
         'assets/Sponsor2.png', lightYellowColor),
   ];
+  dynamic name = "User";
 
+  @override
+  void initState() {
+    super.initState();
+    // name = gettingName();
+    
+    gettingName().then((data){
+      setState(() {
+        name = data;
+      });
+    });
+  }
+
+  gettingName() async {
+    AuthService obj = AuthService();
+    return await obj.getCurrentUserName();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          "Profile Completeness",
+                          "Hello $name!",
                           style: TextStyle(
                             fontFamily: "Avenir",
                             fontWeight: FontWeight.w500,

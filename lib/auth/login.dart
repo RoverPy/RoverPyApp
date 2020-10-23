@@ -16,12 +16,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   String email = "";
   String password = "";
+  String name = "";
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
-      height: 400,
+      height: 500,
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -50,8 +51,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
+                
+                TextFormField(
+                  decoration: textInputDecoration.copyWith(
+                      prefixIcon: Icon(Icons.supervised_user_circle), hintText: "Display Name"),
+                  validator: (val) {
+                    return null;
+                  },
+                  onChanged: (val) {
+                    setState(() {
+                      name = val.isEmpty ? "User" : val;
+                    });
+                  },
+                ),
                 SizedBox(
-                  height: 5.0,
+                  height: 20.0,
                 ),
                 TextFormField(
                   decoration: textInputDecoration.copyWith(
@@ -99,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             //async action here
                             if (_formKey.currentState.validate()) {
                               dynamic res = await _auth.signInWithEmailAndPass(
-                                  email, password);
+                                  email, password, name);
                               print(res);
                               if (res == null) {
                                 Scaffold.of(context).showSnackBar(SnackBar(
