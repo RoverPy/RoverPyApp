@@ -1,2 +1,2 @@
-0 early_blight
-1 seporia
+0 healthy
+1 early_blight

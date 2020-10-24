@@ -53,7 +53,7 @@ class _SpecificState extends State<Specific> {
               child: Material(
                 type: MaterialType.transparency,
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage(widget.info.imageLink),
+                  backgroundImage: AssetImage(widget.info.imageLink),
                   radius: 45.0,
                 ),
               ),
@@ -78,7 +78,7 @@ class _SpecificState extends State<Specific> {
                     ),
                   ),
                 ),
-                Text("This is a short description",
+                Text(widget.info.otherInfo.toString(),
                     style: TextStyle(
                       fontSize: 16.0,
                       color: new Color(0xffff958d),
@@ -89,6 +89,7 @@ class _SpecificState extends State<Specific> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab',
         onPressed: () {
           launch(widget.url);
         },

@@ -200,6 +200,18 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Navigator.of(context).pop();
+          },
+          heroTag: 'fab',
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          elevation: 5.0,
+          tooltip: "Go back",
+          child: Icon(Icons.code),
+        ),
       ),
     );
   }

@@ -9,9 +9,9 @@ import 'package:sign_in/pages/new_process_page.dart';
 
 List<String> images = [
   "assets/about.gif",
-  "assets/user.gif",
+  "assets/profileCard.jpg",
   "assets/Reports.gif",
-  "assets/map.gif",
+  "assets/locate.jpg",
 ];
 
 List<String> title = [
@@ -23,7 +23,7 @@ List<String> title = [
 
 List<Widget> pushTo = [
   AboutUs(),
-  LiveFeed(),
+  ProfilePage(),
   ProcessPage(),
   MapPage(),
 ];

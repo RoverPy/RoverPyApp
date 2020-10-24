@@ -62,7 +62,7 @@ class _TfState extends State<Tf> {
   static Future<File> loadModelFromFirebase() async {
     try {
       // Create model with a name that is specified in the Firebase console
-      final model = FirebaseCustomRemoteModel('ChonkerLeaf');
+      final model = FirebaseCustomRemoteModel('FritzAI_First');
 
       // Specify conditions when the model can be downloaded.
       // If there is no wifi access when the app is started,
@@ -100,13 +100,13 @@ class _TfState extends State<Tf> {
       final labelsData = await rootBundle.load("assets/labels.txt");
       final labelsFile = await File(appDirectory.path + "/labels.txt")
           .writeAsBytes(labelsData.buffer
-          .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
+              .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 
       assert(await Tflite.loadModel(
-        model: modelFile.path,
-        labels: labelsFile.path,
-        isAsset: false,
-      ) ==
+            model: modelFile.path,
+            labels: labelsFile.path,
+            isAsset: false,
+          ) ==
           "success");
       return "Model is loaded";
     } catch (exception) {
@@ -131,17 +131,17 @@ class _TfState extends State<Tf> {
             _image != null
                 ? Image.file(_image)
                 : Text(
-              'Please select image to analyze.',
-              style: TextStyle(color: Colors.black),
-            ),
+                    'Please select image to analyze.',
+                    style: TextStyle(color: Colors.black),
+                  ),
             Column(
               children: _labels != null
                   ? _labels.map((label) {
-                return Text(
-                  "${label["label"]}, ${label["confidence"]}%",
-                  style: TextStyle(color: Colors.black),
-                );
-              }).toList()
+                      return Text(
+                        "${label["label"]}, ${label["confidence"]}%",
+                        style: TextStyle(color: Colors.black),
+                      );
+                    }).toList()
                   : [],
             ),
             Container(
