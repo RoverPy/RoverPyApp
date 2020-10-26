@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:quiver/async.dart';
 import 'package:sign_in/models/series_model.dart';
 import 'package:sign_in/pages/controls_page.dart';
+import 'package:sign_in/pages/tf.dart';
 import 'package:sign_in/utils/themes.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
@@ -13,36 +15,49 @@ class ProcessPage extends StatefulWidget {
 
 class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStateMixin{
   final _firestore = Firestore.instance;
-  final DateTime _dummyDate = DateFormat('dd-MM-yyyy').parse('21-10-2020');
   final DateTime _today = DateFormat('dd-MM-yyyy').parse(DateFormat('dd-MM-yyyy').format(DateTime.now()));
-  bool showWarning;
+  DateTime _lastUsed;
+  bool showWarning = false;
   List<SeriesModel> data = [];
   List<Label> labels = [];
   bool loaded = false;
   AnimationController _controller;
   Animation gradientPosition;
+  TFLite model = TFLite();
 
 
   Future<void> getData() async {
     int count = 0;
-    var lbs = [
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-      Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-    ];
+    List<Label> lbs = [];
+    DocumentSnapshot doc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection('${DateFormat('dd-MM-yyyy').format(_lastUsed)}').document('report').get();
+    var processed = doc.data['processed'];
+    QuerySnapshot images = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection('${DateFormat('dd-MM-yyyy').format(_lastUsed)}').getDocuments();
+    if(processed) {
+      images.documents.forEach((element) {
+        if (element.documentID != "report") {
+          lbs.add(Label(
+            url: element.data['img'],
+            label: element.data['label'],
+            confidence: element.data['confidence']
+          ));
+        }
+      });
+    }
+    else {
+      await model.loadModel();
+      if(model.modelLoaded) {
+        await Future.forEach(images.documents, (element) async {
+          if (element.documentID != "report") {
+            List<Map> lb = await model.getImageLabels(element.data['img']);
+            lbs.add(Label(
+              url: element.data['img'],
+              label: lb[0]['label'].substring(2),
+              confidence: lb[0]['confidence'],
+            ));
+          }
+        });
+      }
+    }
     lbs.forEach((element) {
       if(element.label == 'healthy')
         count += 1;
@@ -57,9 +72,16 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
     });
   }
 
+  Future<void> setShowWarning() async {
+    DocumentSnapshot userDoc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').get();
+    setState(() {
+      _lastUsed = DateFormat('dd-MM-yyyy').parse(userDoc.data['lastUsed']);
+      showWarning = _lastUsed != _today;
+    });
+  }
+
   @override
   void initState() {
-    showWarning = _today != _dummyDate;
     super.initState();
     _controller = AnimationController(duration: Duration(milliseconds: 1500), vsync: this);
     gradientPosition = Tween<double>(
@@ -75,11 +97,13 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
 
     _controller.repeat();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getData().then((value) {
-        setState(() {
-          loaded = true;
+      setShowWarning().then((value) {
+        getData().then((value) {
+          setState(() {
+            loaded = true;
+          });
+          _controller.dispose();
         });
-        _controller.dispose();
       });
     });
   }
@@ -225,7 +249,10 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
                           color: Color.fromRGBO(43, 96, 191, 0.9),
                           borderRadius: BorderRadius.only(topLeft: Radius.circular(5.0), topRight: Radius.circular(5.0))
                         ),
-                        child: Text("Detailed Report", style: TextStyle(fontSize: 24.0),)
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
+                          child: Text("Detailed Report", style: TextStyle(fontSize: 24.0),),
+                        )
                     ),
                     Container(
                       height: 300,
@@ -338,3 +365,20 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
     );
   }
 }
+
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
