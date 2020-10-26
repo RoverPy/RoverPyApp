@@ -1,60 +1,25 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:firebase_ml_custom/firebase_ml_custom.dart';
 import 'package:flutter/services.dart';
 import 'package:tflite/tflite.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_ml_custom/firebase_ml_custom.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:typed_data';
-import 'dart:math';
-import 'package:image/image.dart' as img;
+import 'package:http/http.dart' as http;
 
-class Tf extends StatefulWidget {
-  @override
-  _TfState createState() => _TfState();
-}
+class TFLite {
+  bool _loaded;
 
-class _TfState extends State<Tf> {
-  final ImagePicker _picker = ImagePicker();
-  File _image;
-  List<Map<dynamic, dynamic>> _labels;
-  double confidence = 0.0;
-  //When the model is ready, _loaded changes to trigger the screen state change.
-  Future<String> _loaded = loadModel();
+  bool get modelLoaded => _loaded;
 
-  /// Triggers selection of an image and the consequent inference.
-  Future<void> getImageLabels() async {
-    try {
-      final pickedFile = await _picker.getImage(source: ImageSource.gallery);
-      final image = File(pickedFile.path);
-      if (image == null) {
-        return;
-      }
-
-      var labels = List<Map>.from(await Tflite.runModelOnImage(
-        path: image.path,
-        imageStd: 127.5,
-        threshold: 0.8,
-      ));
-      print("label:");
-      print(labels);
-      setState(() {
-        _labels = labels;
-        _image = image;
-        confidence = labels[0]["confidence"] as double;
-      });
-    } catch (exception) {
-      print("Failed on getting your image and it's labels: $exception");
-      print('Continuing with the program...');
-      rethrow;
-    }
+  TFLite() {
+    _loaded = false;
   }
 
-  /// Gets the model ready for inference on images.
-  static Future<String> loadModel() async {
+  Future<void> loadModel() async {
     final modelFile = await loadModelFromFirebase();
-    return await loadTFLiteModel(modelFile);
+    await loadTFLiteModel(modelFile);
+    _loaded = true;
   }
 
   /// Downloads custom model from the Firebase console and return its file.
@@ -62,7 +27,7 @@ class _TfState extends State<Tf> {
   static Future<File> loadModelFromFirebase() async {
     try {
       // Create model with a name that is specified in the Firebase console
-      final model = FirebaseCustomRemoteModel('FritzAI_First');
+      final model = FirebaseCustomRemoteModel('TomatoModel');
 
       // Specify conditions when the model can be downloaded.
       // If there is no wifi access when the app is started,
@@ -100,13 +65,13 @@ class _TfState extends State<Tf> {
       final labelsData = await rootBundle.load("assets/labels.txt");
       final labelsFile = await File(appDirectory.path + "/labels.txt")
           .writeAsBytes(labelsData.buffer
-              .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
+          .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 
       assert(await Tflite.loadModel(
-            model: modelFile.path,
-            labels: labelsFile.path,
-            isAsset: false,
-          ) ==
+        model: modelFile.path,
+        labels: labelsFile.path,
+        isAsset: false,
+      ) ==
           "success");
       return "Model is loaded";
     } catch (exception) {
@@ -117,101 +82,51 @@ class _TfState extends State<Tf> {
     }
   }
 
-  /// Shows image selection screen only when the model is ready to be used.
-  Widget readyScreen() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Firebase ML Custom example app'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _image != null
-                ? Image.file(_image)
-                : Text(
-                    'Please select image to analyze.',
-                    style: TextStyle(color: Colors.black),
-                  ),
-            Column(
-              children: _labels != null
-                  ? _labels.map((label) {
-                      return Text(
-                        "${label["label"]}, ${label["confidence"]}%",
-                        style: TextStyle(color: Colors.black),
-                      );
-                    }).toList()
-                  : [],
-            ),
-            Container(
-              width: 200,
-              child: Center(
-                child: LinearProgressIndicator(
-                  value: confidence,
-                  backgroundColor: Colors.grey.withOpacity(0.3),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: getImageLabels,
-        child: Icon(Icons.add),
-      ),
-    );
+  Future<File> urlToFile(String imageUrl) async {
+
+    // generate random number.
+    var rng = new Random();
+
+    // get temporary directory of device.
+    Directory tempDir = await getTemporaryDirectory();
+
+    // get temporary path from temporary directory.
+    String tempPath = tempDir.path;
+
+    // create a new file in temporary path with random file name.
+    File file = new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
+    print('$tempPath' + (rng.nextInt(100)).toString() + '.png');
+
+    // call http.get method and pass imageUrl into it to get response.
+    http.Response response = await http.get(imageUrl);
+
+    // write bodyBytes received in response to file.
+    await file.writeAsBytes(response.bodyBytes);
+
+    // now return the file which is created with random name in
+    // temporary directory and image bytes from response is written to // that file.
+    return file;
   }
 
-  /// In case of error shows unrecoverable error screen.
-  Widget errorScreen() {
-    return Scaffold(
-      body: Center(
-        child: Text("Error loading model. Please check the logs."),
-      ),
-    );
-  }
+  Future<List<Map>> getImageLabels(String url) async {
+    var img = await urlToFile(url);
+    try {
+      final image = img;
+      if (image == null) {
+        return null;
+      }
 
-  /// In case of long loading shows loading screen until model is ready or
-  /// error is received.
-  Widget loadingScreen() {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: CircularProgressIndicator(),
-            ),
-            Text(
-              "Please make sure that you are using wifi.",
-              style: TextStyle(color: Colors.black),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Shows different screens based on the state of the custom model.
-  Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      style: Theme.of(context).textTheme.headline2,
-      textAlign: TextAlign.center,
-      child: FutureBuilder<String>(
-        future: _loaded, // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            return readyScreen();
-          } else if (snapshot.hasError) {
-            return errorScreen();
-          } else {
-            return loadingScreen();
-          }
-        },
-      ),
-    );
+      var labels = List<Map>.from(await Tflite.runModelOnImage(
+        path: img.path,
+        imageStd: 127.5,
+        threshold: 0.8,
+      ));
+      print("label: $labels");
+      return labels;
+    } catch (exception) {
+      print("Failed on getting your image and it's labels: $exception");
+      print('Continuing with the program...');
+      rethrow;
+    }
   }
 }
