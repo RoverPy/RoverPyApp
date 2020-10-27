@@ -11,6 +11,7 @@ import 'package:sign_in/services/SelectBondedDevicePage.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import '../services/ChatPage.dart';
 import '../utils/customIcons.dart';
+import 'package:sign_in/pages/video_page.dart';
 
 class ControlsPage extends StatefulWidget {
   final BluetoothDevice preSelectedServer;
@@ -106,6 +107,10 @@ class _ControlsPageState extends State<ControlsPage> {
                         ),
                       ],
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: LiveFeed(),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),

@@ -366,19 +366,5 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
   }
 }
 
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
-//Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+//TODO: Add SnackBar or timer
+//TODO: Batch command to update records in firebase
