@@ -11,6 +11,7 @@ import 'package:sign_in/services/SelectBondedDevicePage.dart';
 import 'package:sign_in/utils/utils_export.dart';
 import '../services/ChatPage.dart';
 import '../utils/customIcons.dart';
+import 'package:sign_in/pages/video_page.dart';
 
 class ControlsPage extends StatefulWidget {
   final BluetoothDevice preSelectedServer;
@@ -44,7 +45,7 @@ class _ControlsPageState extends State<ControlsPage> {
   @override
   Widget build(BuildContext context) {
 
-    stepperSize = (MediaQuery.of(context).size.height - (30.0+32.0+24.0)) / 3;
+    stepperSize = (MediaQuery.of(context).size.height - (30.0+32.0+24.0) - 160.0) / 3;
 
     final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
@@ -107,10 +108,12 @@ class _ControlsPageState extends State<ControlsPage> {
                       ],
                     ),
                   ),
+                  LiveFeed().build(context),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       width: MediaQuery.of(context).size.width - 15.0,
+                      height: (MediaQuery.of(context).size.height - 320.0)/2,
                       decoration: BoxDecoration(boxShadow: [
                         BoxShadow(
                             blurRadius: 5.0,
@@ -138,7 +141,7 @@ class _ControlsPageState extends State<ControlsPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Container(
                                     child: Center(
                                       child: StepperTouch(
@@ -177,20 +180,14 @@ class _ControlsPageState extends State<ControlsPage> {
                     ),
                   ),
                   Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width - 15.0,
+                    width: MediaQuery.of(context).size.width - 15.0,
+                    height: (MediaQuery.of(context).size.height - 320.0)/2,
                     decoration: BoxDecoration(boxShadow: [
                       BoxShadow(
-                          blurRadius: 5.0, color: Theme
-                          .of(context)
-                          .accentColor),
+                          blurRadius: 5.0, color: Theme.of(context).accentColor),
                     ]),
                     child: Card(
-                      color: Theme
-                          .of(context)
-                          .backgroundColor,
+                      color: Theme.of(context).backgroundColor,
                       elevation: 5.0,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -199,13 +196,10 @@ class _ControlsPageState extends State<ControlsPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
                                 child: Text(
                                   'Belt Controls',
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .headline6,
+                                  style: Theme.of(context).textTheme.headline6,
                                 ),
                               ),
                             ],
@@ -214,7 +208,7 @@ class _ControlsPageState extends State<ControlsPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Container(
                                   child: Center(
                                     child: StepperTouch(
