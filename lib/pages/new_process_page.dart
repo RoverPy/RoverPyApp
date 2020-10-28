@@ -5,6 +5,7 @@ import 'package:quiver/async.dart';
 import 'package:sign_in/models/series_model.dart';
 import 'package:sign_in/pages/controls_page.dart';
 import 'package:sign_in/pages/tf.dart';
+import 'package:sign_in/utils/customIcons.dart';
 import 'package:sign_in/utils/themes.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
@@ -13,7 +14,7 @@ class ProcessPage extends StatefulWidget {
   _ProcessPageState createState() => _ProcessPageState();
 }
 
-class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStateMixin{
+class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin{
   final _firestore = Firestore.instance;
   final DateTime _today = DateFormat('dd-MM-yyyy').parse(DateFormat('dd-MM-yyyy').format(DateTime.now()));
   DateTime _lastUsed;
@@ -27,6 +28,19 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
 
 
   Future<void> getData() async {
+    _controller = AnimationController(duration: Duration(milliseconds: 1500), vsync: this);
+    gradientPosition = Tween<double>(
+        begin: -3,
+        end: 10).animate(
+        CurvedAnimation(
+            parent: _controller,
+            curve: Curves.linear
+        )
+    )..addListener(() {
+      setState(() {});
+    });
+
+    _controller.repeat();
     int count = 0;
     List<Label> lbs = [];
     DocumentSnapshot doc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection('${DateFormat('dd-MM-yyyy').format(_lastUsed)}').document('report').get();
@@ -62,7 +76,6 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
       if(element.label == 'healthy')
         count += 1;
     });
-    await Future.delayed(Duration(seconds: 5));
     setState(() {
       labels = lbs;
       data = [
@@ -72,17 +85,10 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
     });
   }
 
-  Future<void> setShowWarning() async {
-    DocumentSnapshot userDoc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').get();
+  modelChanged() async {
     setState(() {
-      _lastUsed = DateFormat('dd-MM-yyyy').parse(userDoc.data['lastUsed']);
-      showWarning = _lastUsed != _today;
+      loaded = false;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
     _controller = AnimationController(duration: Duration(milliseconds: 1500), vsync: this);
     gradientPosition = Tween<double>(
         begin: -3,
@@ -96,6 +102,45 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
     });
 
     _controller.repeat();
+
+    var count = 0;
+    List<Label> lbs = [];
+    await model.loadModel();
+    if(model.modelLoaded) {
+      await Future.forEach(labels, (element) async {
+        List<Map> lb = await model.getImageLabels(element.url);
+        lbs.add(Label(
+          url: element.url,
+          label: lb[0]['label'].substring(2),
+          confidence: lb[0]['confidence'],
+        ));
+      });
+      lbs.forEach((element) {
+        if(element.label == 'healthy')
+          count += 1;
+      });
+      setState(() {
+        labels = lbs;
+        data = [
+          SeriesModel(label: 'healthy', count: count, color: charts.Color.fromHex(code: '#32a848')),
+          SeriesModel(label: 'unhealthy', count: lbs.length - count, color: charts.Color.fromHex(code: '#a85f32')),
+        ];
+        loaded = true;
+      });
+    }
+  }
+
+  Future<void> setShowWarning() async {
+    DocumentSnapshot userDoc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').get();
+    setState(() {
+      _lastUsed = DateFormat('dd-MM-yyyy').parse(userDoc.data['lastUsed']);
+      showWarning = _lastUsed != _today;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setShowWarning().then((value) {
         getData().then((value) {
@@ -121,18 +166,45 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
             SizedBox(
               height: 30.0,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text("Reports",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 42.0,
-                      fontFamily: "Calibre-Semibold",
-                      letterSpacing: 1.0,
-                    )
-                ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("Reports",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 42.0,
+                        fontFamily: "Calibre-Semibold",
+                        letterSpacing: 1.0,
+                      )),
+                  Builder(
+                    builder: (context) {
+                      return PopupMenuButton<String>(
+                          icon: Icon(
+                            CustomIcons.option,
+                            size: 12.0,
+                            color: Colors.white,
+                          ),
+                          itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                child: Text('Health Detection'),
+                                value: 'TomatoModel',
+                              ),
+                              PopupMenuItem(
+                                child: Text('Flower Detection'),
+                                value: 'Flower_Test',
+                              )
+                            ];
+                          },
+                          onSelected: (value) async {
+                            model.setModel = value;
+                            await modelChanged();
+                          });
+                    },
+                  ),
+                ],
               ),
             ),
             Builder(builder: (context) {
@@ -222,7 +294,7 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
                         height: 240,
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
-                                begin: Alignment(gradientPosition.value, 0),
+                                begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
                                 end: Alignment(-1, 0),
                                 colors: [Colors.black12, Colors.black26, Colors.black12],
                             ),
@@ -307,7 +379,7 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
                                           child: Container(
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
-                                                begin: Alignment(gradientPosition.value, 0),
+                                                begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
                                                 end: Alignment(-1, 0),
                                                 colors: [Colors.black12, Colors.black26, Colors.black12],
                                               ),
@@ -320,7 +392,7 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
                                           child: Container(
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
-                                                begin: Alignment(gradientPosition.value, 0),
+                                                begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
                                                 end: Alignment(-1, 0),
                                                 colors: [Colors.black12, Colors.black26, Colors.black12],
                                               ),
@@ -339,7 +411,7 @@ class _ProcessPageState extends State<ProcessPage> with SingleTickerProviderStat
                                         width: 50.0,
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
-                                            begin: Alignment(gradientPosition.value, 0),
+                                            begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
                                             end: Alignment(-1, 0),
                                             colors: [Colors.black12, Colors.black26, Colors.black12],
                                           ),

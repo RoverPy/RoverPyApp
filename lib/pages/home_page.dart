@@ -88,8 +88,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 22.0, vertical: 6.0),
+                          padding: EdgeInsets.fromLTRB(22.0, 10.0, 22.0, 6.0),
                           child: Text("Profile Name",
                               style: TextStyle(color: Colors.white)),
                         ),
@@ -157,8 +156,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: Center(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 22.0, vertical: 6.0),
+                            padding: EdgeInsets.fromLTRB(22.0, 10.0, 22.0, 6.0),
                             child: Text("Quick Connect",
                                 style: TextStyle(color: Colors.white)),
                           ),
@@ -348,6 +346,15 @@ class CardScrollWidget extends StatelessWidget {
                     fit: StackFit.expand,
                     children: <Widget>[
                       Image.asset(images[i], fit: BoxFit.cover),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              end: Alignment.topCenter,
+                              begin: Alignment.bottomCenter,
+                              colors: [Colors.black45, Colors.transparent],
+                          ),
+                        ),
+                      ),
                       Align(
                         alignment: Alignment.bottomLeft,
                         child: Column(
@@ -370,12 +377,11 @@ class CardScrollWidget extends StatelessWidget {
                               padding: const EdgeInsets.only(
                                   left: 12.0, bottom: 12.0),
                               child:Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 22.0, vertical: 6.0),
+                                padding: EdgeInsets.fromLTRB(22.0, 10.0, 22.0, 6.0),
                                 decoration: BoxDecoration(
                                     color: Colors.blueAccent,
                                     borderRadius: BorderRadius.circular(20.0)),
-                                  child: Text("Read Later",
+                                  child: Text("View",
                                       style: TextStyle(color: Colors.white)),
                                 ),
                               ),
