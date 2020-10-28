@@ -75,8 +75,8 @@ class _ProcessingPageState extends State<ProcessingPage> {
   static Future<String> loadTFLiteModel(File modelFile) async {
     try {
       final appDirectory = await getApplicationDocumentsDirectory();
-      final labelsData = await rootBundle.load("assets/labels.txt");
-      final labelsFile = await File(appDirectory.path + "/labels.txt")
+      final labelsData = await rootBundle.load("assets/TomatoModel.txt");
+      final labelsFile = await File(appDirectory.path + "/TomatoModel.txt")
           .writeAsBytes(labelsData.buffer
               .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 

@@ -9,11 +9,20 @@ import 'package:http/http.dart' as http;
 
 class TFLite {
   bool _loaded;
+  String _modelName;
+
+  set setModel(String name) {
+    _modelName = name;
+    _loaded = false;
+  }
+
+  String get getModel => _modelName;
 
   bool get modelLoaded => _loaded;
 
   TFLite() {
     _loaded = false;
+    _modelName = "TomatoModel";
   }
 
   Future<void> loadModel() async {
@@ -24,10 +33,10 @@ class TFLite {
 
   /// Downloads custom model from the Firebase console and return its file.
   /// located on the mobile device.
-  static Future<File> loadModelFromFirebase() async {
+  Future<File> loadModelFromFirebase() async {
     try {
       // Create model with a name that is specified in the Firebase console
-      final model = FirebaseCustomRemoteModel('TomatoModel');
+      final model = FirebaseCustomRemoteModel(_modelName);
 
       // Specify conditions when the model can be downloaded.
       // If there is no wifi access when the app is started,
@@ -59,11 +68,11 @@ class TFLite {
 
   /// Loads the model into some TF Lite interpreter.
   /// In this case interpreter provided by tflite plugin.
-  static Future<String> loadTFLiteModel(File modelFile) async {
+  Future<String> loadTFLiteModel(File modelFile) async {
     try {
       final appDirectory = await getApplicationDocumentsDirectory();
-      final labelsData = await rootBundle.load("assets/labels.txt");
-      final labelsFile = await File(appDirectory.path + "/labels.txt")
+      final labelsData = await rootBundle.load("assets/"+_modelName+".txt");
+      final labelsFile = await File(appDirectory.path + "/"+_modelName+".txt")
           .writeAsBytes(labelsData.buffer
           .asUint8List(labelsData.offsetInBytes, labelsData.lengthInBytes));
 
