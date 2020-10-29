@@ -34,7 +34,7 @@ This project was made by:
 ## Found something off? Want to collaborate?
 - Fork this repo
 - Make your changes
-- Make a PR and add any of the Contributor above as a [Reviewer](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/requesting-a-pull-request-review)
+- Make a PR and add any of the [Contributor](https://github.com/RoverPy/RoverPyApp#contributors) above as a [Reviewer](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/requesting-a-pull-request-review)
 
 ## License
 You can view our License [here](https://github.com/RoverPy/RoverPyApp/blob/master/LICENSE)
