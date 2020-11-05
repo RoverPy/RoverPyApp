@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sign_in/models/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   //setting up an instance of Firebase, making it final so no one can override it
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Firestore _firestore = Firestore.instance;
 
   //stream
   Stream<FirebaseUser> get userDetail {
@@ -45,13 +47,20 @@ class AuthService {
 
   Future getCurrentUserName() async {
     try{
+      int counter = 0;
       FirebaseUser user = await _auth.currentUser();
-      return user.displayName;
+      DocumentReference document = Firestore.instance.document('users/${user.uid}');
+      dynamic d = await document.get().then((value) {
+        counter = value['completed'];
+        return [user.displayName, counter];
+      });
+      return d;
     }catch (err){
       print("Caught an error: $err");
       return null;
     }
   }
+
 
   //Logout function
   void logOut() async {
