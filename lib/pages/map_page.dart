@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fluster/fluster.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:sign_in/helpers/map_helper.dart';
 import 'package:sign_in/helpers/map_marker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,8 +81,13 @@ class _MapPageState extends State<MapPage> {
   /// Inits [Fluster] and all the markers with network images and updates the loading state.
   void _initMarkers() async {
     final List<MapMarker> markers = [];
+    String lastUsed;
 
-    QuerySnapshot docs = await Firestore.instance.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection('urls').getDocuments();
+    DocumentSnapshot userDoc = await Firestore.instance.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').get();
+    lastUsed = userDoc.data['lastUsed'];
+    print(lastUsed);
+
+    QuerySnapshot docs = await Firestore.instance.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection(lastUsed).getDocuments();
 
 //    docs.documents.forEach((element) {
 //      _markerLocations.add(LatLng(element.data['lat'], element.data['lng']));
@@ -89,20 +95,22 @@ class _MapPageState extends State<MapPage> {
 //    });
 
     for (int i=0; i< docs.documents.length; i++) {
+      print('${docs.documents[i].data['lat']} ${docs.documents[i].data['lng']}');
+      if (docs.documents[i].documentID != 'report') {
+        LatLng markerLocation = LatLng(docs.documents[i].data['lat'], docs.documents[i].data['lng']);
+        _markerLocations.add(markerLocation);
 
-      LatLng markerLocation = LatLng(docs.documents[i].data['lat'], docs.documents[i].data['lng']);
-      _markerLocations.add(markerLocation);
+        final BitmapDescriptor markerImage =
+        await MapHelper.getMarkerImageFromUrl(docs.documents[i].data['label'] == 'healthy'? _markerImageUrl: _unhealthyMarkerImageUrl);//TODO: Filter based on label
 
-      final BitmapDescriptor markerImage =
-      await MapHelper.getMarkerImageFromUrl(docs.documents[i].data['label'] == 'healthy'? _markerImageUrl: _unhealthyMarkerImageUrl);//TODO: Filter based on label
-
-      markers.add(
-        MapMarker(
-          id: i.toString(),
-          position: markerLocation,
-          icon: markerImage,
-        ),
-      );
+        markers.add(
+          MapMarker(
+            id: i.toString(),
+            position: markerLocation,
+            icon: markerImage,
+          ),
+        );
+      }
     }
 
     _clusterManager = await MapHelper.initClusterManager(
