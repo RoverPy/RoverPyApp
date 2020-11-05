@@ -14,9 +14,11 @@ class ProcessPage extends StatefulWidget {
   _ProcessPageState createState() => _ProcessPageState();
 }
 
-class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin{
+class _ProcessPageState extends State<ProcessPage>
+    with TickerProviderStateMixin {
   final _firestore = Firestore.instance;
-  final DateTime _today = DateFormat('dd-MM-yyyy').parse(DateFormat('dd-MM-yyyy').format(DateTime.now()));
+  final DateTime _today = DateFormat('dd-MM-yyyy')
+      .parse(DateFormat('dd-MM-yyyy').format(DateTime.now()));
   DateTime _lastUsed;
   bool showWarning = false;
   List<SeriesModel> data = [];
@@ -26,40 +28,42 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
   Animation gradientPosition;
   TFLite model = TFLite();
 
-
   Future<void> getData() async {
-    _controller = AnimationController(duration: Duration(milliseconds: 1500), vsync: this);
-    gradientPosition = Tween<double>(
-        begin: -3,
-        end: 10).animate(
-        CurvedAnimation(
-            parent: _controller,
-            curve: Curves.linear
-        )
-    )..addListener(() {
-      setState(() {});
-    });
+    _controller = AnimationController(
+        duration: Duration(milliseconds: 1500), vsync: this);
+    gradientPosition = Tween<double>(begin: -3, end: 10)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.linear))
+          ..addListener(() {
+            setState(() {});
+          });
 
     _controller.repeat();
     int count = 0;
     List<Label> lbs = [];
-    DocumentSnapshot doc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection('${DateFormat('dd-MM-yyyy').format(_lastUsed)}').document('report').get();
+    DocumentSnapshot doc = await _firestore
+        .collection('users')
+        .document('HHJjcEassOW3nRJEE65tYXmTJzn2')
+        .collection('${DateFormat('dd-MM-yyyy').format(_lastUsed)}')
+        .document('report')
+        .get();
     var processed = doc.data['processed'];
-    QuerySnapshot images = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').collection('${DateFormat('dd-MM-yyyy').format(_lastUsed)}').getDocuments();
-    if(processed) {
+    QuerySnapshot images = await _firestore
+        .collection('users')
+        .document('HHJjcEassOW3nRJEE65tYXmTJzn2')
+        .collection('${DateFormat('dd-MM-yyyy').format(_lastUsed)}')
+        .getDocuments();
+    if (processed) {
       images.documents.forEach((element) {
         if (element.documentID != "report") {
           lbs.add(Label(
-            url: element.data['img'],
-            label: element.data['label'],
-            confidence: element.data['confidence']
-          ));
+              url: element.data['img'],
+              label: element.data['label'],
+              confidence: element.data['confidence']));
         }
       });
-    }
-    else {
+    } else {
       await model.loadModel();
-      if(model.modelLoaded) {
+      if (model.modelLoaded) {
         await Future.forEach(images.documents, (element) async {
           if (element.documentID != "report") {
             List<Map> lb = await model.getImageLabels(element.data['img']);
@@ -73,14 +77,19 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
       }
     }
     lbs.forEach((element) {
-      if(element.label == 'healthy')
-        count += 1;
+      if (element.label == 'healthy') count += 1;
     });
     setState(() {
       labels = lbs;
       data = [
-        SeriesModel(label: 'healthy', count: count, color: charts.Color.fromHex(code: '#32a848')),
-        SeriesModel(label: 'unhealthy', count: lbs.length - count, color: charts.Color.fromHex(code: '#a85f32')),
+        SeriesModel(
+            label: 'healthy',
+            count: count,
+            color: charts.Color.fromHex(code: '#32a848')),
+        SeriesModel(
+            label: 'unhealthy',
+            count: lbs.length - count,
+            color: charts.Color.fromHex(code: '#a85f32')),
       ];
     });
   }
@@ -89,24 +98,20 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
     setState(() {
       loaded = false;
     });
-    _controller = AnimationController(duration: Duration(milliseconds: 1500), vsync: this);
-    gradientPosition = Tween<double>(
-        begin: -3,
-        end: 10).animate(
-        CurvedAnimation(
-            parent: _controller,
-            curve: Curves.linear
-        )
-    )..addListener(() {
-      setState(() {});
-    });
+    _controller = AnimationController(
+        duration: Duration(milliseconds: 1500), vsync: this);
+    gradientPosition = Tween<double>(begin: -3, end: 10)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.linear))
+          ..addListener(() {
+            setState(() {});
+          });
 
     _controller.repeat();
 
     var count = 0;
     List<Label> lbs = [];
     await model.loadModel();
-    if(model.modelLoaded) {
+    if (model.modelLoaded) {
       await Future.forEach(labels, (element) async {
         List<Map> lb = await model.getImageLabels(element.url);
         lbs.add(Label(
@@ -116,14 +121,19 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
         ));
       });
       lbs.forEach((element) {
-        if(element.label == 'healthy')
-          count += 1;
+        if (element.label == 'healthy') count += 1;
       });
       setState(() {
         labels = lbs;
         data = [
-          SeriesModel(label: 'healthy', count: count, color: charts.Color.fromHex(code: '#32a848')),
-          SeriesModel(label: 'unhealthy', count: lbs.length - count, color: charts.Color.fromHex(code: '#a85f32')),
+          SeriesModel(
+              label: 'healthy',
+              count: count,
+              color: charts.Color.fromHex(code: '#32a848')),
+          SeriesModel(
+              label: 'unhealthy',
+              count: lbs.length - count,
+              color: charts.Color.fromHex(code: '#a85f32')),
         ];
         loaded = true;
       });
@@ -131,7 +141,10 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
   }
 
   Future<void> setShowWarning() async {
-    DocumentSnapshot userDoc = await _firestore.collection('users').document('HHJjcEassOW3nRJEE65tYXmTJzn2').get();
+    DocumentSnapshot userDoc = await _firestore
+        .collection('users')
+        .document('HHJjcEassOW3nRJEE65tYXmTJzn2')
+        .get();
     setState(() {
       _lastUsed = DateFormat('dd-MM-yyyy').parse(userDoc.data['lastUsed']);
       showWarning = _lastUsed != _today;
@@ -194,7 +207,7 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
                               ),
                               PopupMenuItem(
                                 child: Text('Flower Detection'),
-                                value: 'Flower_Test',
+                                value: 'Flower_Float',
                               )
                             ];
                           },
@@ -208,124 +221,145 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
               ),
             ),
             Builder(builder: (context) {
-              if(showWarning) {
+              if (showWarning) {
                 return Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Container(
-                    width: MediaQuery.of(context).size.width-10,
+                    width: MediaQuery.of(context).size.width - 10,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                       color: Color.fromRGBO(3, 132, 252, 0.6),
                     ),
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 2*MediaQuery.of(context).size.width/3 - 32,
-                                child: Text('No new data available. Head over to controls page to move rover through the field and collect data.'),
-                              ),
-                              FlatButton(
-                                  onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ControlsPage()));
-                                  },
-                                  child: Container(
+                    child: Stack(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 2 * MediaQuery.of(context).size.width / 3 -
+                                  32,
+                              child: Text(
+                                  'No new data available. Head over to controls page to move rover through the field and collect data.'),
+                            ),
+                            FlatButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ControlsPage()));
+                                },
+                                child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
-                                      boxShadow: [
-                                        BoxShadow(color: Colors.white.withOpacity(0.2), blurRadius: 5.0)
-                                      ]
-                                    ),
-                                    width: MediaQuery.of(context).size.width/3 - 26,
-                                      child: Text('CONTROLS PAGE', textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.white),)
-                                  )
-                              ),
+                                        color: Colors.white.withOpacity(0.2),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color:
+                                                  Colors.white.withOpacity(0.2),
+                                              blurRadius: 5.0)
+                                        ]),
+                                    width:
+                                        MediaQuery.of(context).size.width / 3 -
+                                            26,
+                                    child: Text(
+                                      'CONTROLS PAGE',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.white),
+                                    ))),
                           ],
                         ),
                       ),
-                        Positioned(
-                          top: 5,
-                          right: 8,
-                          child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  showWarning = false;
-                                });
-                              },
-                              child: Icon(Icons.clear, size: 15.0, color: Colors.white,)),
-                        ),
-                      ]
-                    ),
+                      Positioned(
+                        top: 5,
+                        right: 8,
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                showWarning = false;
+                              });
+                            },
+                            child: Icon(
+                              Icons.clear,
+                              size: 15.0,
+                              color: Colors.white,
+                            )),
+                      ),
+                    ]),
                   ),
                 );
-              }
-              else
+              } else
                 return Container();
             }),
             Card(
-              child: Builder(
-                builder: (context) {
-                  if (loaded) {
-                    var series = [
-                      charts.Series(
-                        id: 'report',
-                        domainFn: (SeriesModel item, _) => item.label,
-                        measureFn: (SeriesModel item, _) => item.count,
-                        colorFn: (SeriesModel item, _) => item.color,
-                        data: data,
-                      )
-                    ];
-                    var chart = charts.BarChart(
-                      series,
-                      animate: true,
-                    );
-                    return Container(
-                      height: 250,
-                      child: chart,
-                    );
-                  }
-                  else {
-                    return Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Container(
-                        height: 240,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
-                                end: Alignment(-1, 0),
-                                colors: [Colors.black12, Colors.black26, Colors.black12],
-                            ),
-                          borderRadius: BorderRadius.circular(5.0),
+              child: Builder(builder: (context) {
+                if (loaded) {
+                  var series = [
+                    charts.Series(
+                      id: 'report',
+                      domainFn: (SeriesModel item, _) => item.label,
+                      measureFn: (SeriesModel item, _) => item.count,
+                      colorFn: (SeriesModel item, _) => item.color,
+                      data: data,
+                    )
+                  ];
+                  var chart = charts.BarChart(
+                    series,
+                    animate: true,
+                  );
+                  return Container(
+                    height: 250,
+                    child: chart,
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Container(
+                      height: 240,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(
+                              gradientPosition == null
+                                  ? -3
+                                  : gradientPosition.value,
+                              0),
+                          end: Alignment(-1, 0),
+                          colors: [
+                            Colors.black12,
+                            Colors.black26,
+                            Colors.black12
+                          ],
                         ),
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
-                    );
-                  }
+                    ),
+                  );
+                }
               }),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
-                  color: Colors.white
-                ),
+                    borderRadius: BorderRadius.circular(5.0),
+                    color: Colors.white),
 //                height: showWarning ? ,
                 child: Column(
                   children: [
                     Container(
-                      width: MediaQuery.of(context).size.width - 5,
+                        width: MediaQuery.of(context).size.width - 5,
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(43, 96, 191, 0.9),
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(5.0), topRight: Radius.circular(5.0))
-                        ),
+                            color: Color.fromRGBO(43, 96, 191, 0.9),
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(5.0),
+                                topRight: Radius.circular(5.0))),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
-                          child: Text("Detailed Report", style: TextStyle(fontSize: 24.0),),
-                        )
-                    ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 3.0),
+                          child: Text(
+                            "Detailed Report",
+                            style: TextStyle(fontSize: 24.0),
+                          ),
+                        )),
                     Container(
                       height: 300,
                       child: ListView.builder(
@@ -338,87 +372,130 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
                                         SizedBox(
                                           height: 45.0,
                                           width: 45.0,
-                                          child: Image(image: NetworkImage(labels[index].url), fit: BoxFit.fill,),
+                                          child: Image(
+                                            image:
+                                                NetworkImage(labels[index].url),
+                                            fit: BoxFit.fill,
+                                          ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                          child: Text(labels[index].label, style: TextStyle(color: Colors.black, fontSize: 18.0),),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Text(
+                                            labels[index].label,
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18.0),
+                                          ),
                                         ),
                                       ],
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                      child: Text('${labels[index].confidence}', style: TextStyle(color: Colors.black12),),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: Text(
+                                        '${labels[index].confidence}',
+                                        style: TextStyle(color: Colors.black12),
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                             );
-                          }
-                          else {
+                          } else {
                             return Container(
                               width: MediaQuery.of(context).size.width - 20,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
                                         SizedBox(
-                                          height: 45.0,
-                                          width: 45.0,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
-                                                end: Alignment(-1, 0),
-                                                colors: [Colors.black12, Colors.black26, Colors.black12],
+                                            height: 45.0,
+                                            width: 45.0,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment(
+                                                      gradientPosition == null
+                                                          ? -3
+                                                          : gradientPosition
+                                                              .value,
+                                                      0),
+                                                  end: Alignment(-1, 0),
+                                                  colors: [
+                                                    Colors.black12,
+                                                    Colors.black26,
+                                                    Colors.black12
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
                                               ),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                          )
-                                        ),
+                                            )),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
-                                                end: Alignment(-1, 0),
-                                                colors: [Colors.black12, Colors.black26, Colors.black12],
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment(
+                                                      gradientPosition == null
+                                                          ? -3
+                                                          : gradientPosition
+                                                              .value,
+                                                      0),
+                                                  end: Alignment(-1, 0),
+                                                  colors: [
+                                                    Colors.black12,
+                                                    Colors.black26,
+                                                    Colors.black12
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
                                               ),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            height: 18.0,
-                                            width: 200.0,
-                                          )
-                                        ),
+                                              height: 18.0,
+                                              width: 200.0,
+                                            )),
                                       ],
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                      child: Container(
-                                        height: 18.0,
-                                        width: 50.0,
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment(gradientPosition == null ? -3 : gradientPosition.value, 0),
-                                            end: Alignment(-1, 0),
-                                            colors: [Colors.black12, Colors.black26, Colors.black12],
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Container(
+                                          height: 18.0,
+                                          width: 50.0,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment(
+                                                  gradientPosition == null
+                                                      ? -3
+                                                      : gradientPosition.value,
+                                                  0),
+                                              end: Alignment(-1, 0),
+                                              colors: [
+                                                Colors.black12,
+                                                Colors.black26,
+                                                Colors.black12
+                                              ],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
                                           ),
-                                          borderRadius: BorderRadius.circular(5.0),
-                                        ),
-                                      )
-                                    ),
+                                        )),
                                   ],
                                 ),
                               ),
@@ -438,6 +515,7 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
   }
 }
 
+<<<<<<< Updated upstream
 //Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
 //Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
 //Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
@@ -454,3 +532,7 @@ class _ProcessPageState extends State<ProcessPage> with TickerProviderStateMixin
 //Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
 //Label(label: 'healthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
 //Label(label: 'unhealthy', confidence: 0.9999, url: 'https://firebasestorage.googleapis.com/v0/b/roverpy-aamp.appspot.com/o/example%2F27-500x375.jpg?alt=media&token=f8a551af-cfd3-4da2-ba32-5f306e252649'),
+=======
+//TODO: Add SnackBar or timer
+//TODO: Batch command to update records in firebase
+>>>>>>> Stashed changes

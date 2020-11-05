@@ -74,6 +74,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_mjpeg/flutter_mjpeg.dart';
 
+<<<<<<< Updated upstream
 class LiveFeed extends HookWidget {
   @override
   Widget build(BuildContext context) {
@@ -83,13 +84,20 @@ class LiveFeed extends HookWidget {
         title: Text('Rover Live Feed'),
       ),
       body: Column(
+=======
+class LiveFeed {
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200.0,
+      child: Column(
+>>>>>>> Stashed changes
         children: <Widget>[
           Expanded(
             child: Center(
               child: Mjpeg(
                 isLive: isRunning.value,
                 stream:
-                    'http://192.168.10.37:8081/videostream.cgi?rate=0&user=&pwd=', //'http://192.168.1.37:8081',
+                    'http://192.168.10.35:8081/videostream.cgi?rate=0&user=&pwd=', //'http://192.168.1.37:8081',
               ),
             ),
           ),
